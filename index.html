@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Crypto Miner Empire</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Syne+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#06090F;--panel:#0C1220;--panel2:#101828;
+  --border:rgba(0,152,234,.12);--ton:#0098EA;--ton2:#006BB3;
+  --gold:#FFD700;--gold2:#FFA500;--green:#00E676;--red:#FF3D57;
+  --purple:#A855F7;--text:#C8DEFF;--muted:#2A4060;--white:#E8F4FF;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Space Grotesk',sans-serif;color:var(--text)}
+
+/* ── LOADING ── */
+#load{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999}
+.load-ico{font-size:64px;animation:flt 2s ease-in-out infinite}
+@keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.load-title{font-family:'Bebas Neue';font-size:30px;letter-spacing:3px;color:#fff;margin-top:14px}
+.load-sub{font-family:'Syne Mono';font-size:11px;color:var(--muted);margin-top:6px;letter-spacing:2px}
+.load-bar{width:200px;height:3px;background:rgba(255,255,255,.05);border-radius:10px;margin-top:20px;overflow:hidden}
+.load-fill{height:100%;width:0;background:linear-gradient(90deg,var(--ton),var(--green));border-radius:10px;transition:width .3s}
+
+/* ── APP ── */
+#app{height:100%;display:none;flex-direction:column}
+.content{flex:1;overflow-y:auto;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+.sv{display:none;flex-direction:column;padding:14px;animation:fi .2s ease}
+.sv.on{display:flex}
+@keyframes fi{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TICKER ── */
+.ticker{background:rgba(0,0,0,.6);border-bottom:1px solid rgba(255,215,0,.1);padding:5px 0;overflow:hidden;flex-shrink:0;position:relative}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:24px;z-index:2}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
+.ticker::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
+.tk-track{display:flex;animation:tk 30s linear infinite;white-space:nowrap}
+@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ti{display:inline-flex;align-items:center;gap:5px;padding:0 18px;font-size:10px;font-family:'Syne Mono'}
+.ti-g{color:var(--green)}.ti-b{color:var(--ton)}.ti-y{color:var(--gold)}
+
+/* ── BOTTOM NAV ── */
+.bnav{background:rgba(6,9,15,.97);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px 0 max(10px,env(safe-area-inset-bottom));display:flex;justify-content:space-around;flex-shrink:0}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;border-radius:10px;cursor:pointer;transition:all .15s;position:relative}
+.ni.on{background:rgba(0,152,234,.08)}
+.ni-ico{font-size:19px}
+.ni-lbl{font-family:'Syne Mono';font-size:7px;color:var(--muted);letter-spacing:.5px;text-transform:uppercase}
+.ni.on .ni-lbl{color:var(--ton)}
+.ni-badge{position:absolute;top:2px;right:4px;background:var(--red);border-radius:50%;width:8px;height:8px;display:none}
+.ni-badge.show{display:block}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:75px;left:12px;right:12px;background:linear-gradient(135deg,#03100A,#030A14);border:1px solid var(--green);border-radius:12px;padding:10px 14px;display:none;align-items:center;gap:8px;z-index:200;font-size:12px;color:var(--green);box-shadow:0 4px 20px rgba(0,230,118,.2)}
+
+/* ── SECTION LABELS ── */
+.sec-lbl{font-family:'Syne Mono';font-size:9px;color:var(--ton);letter-spacing:2px;margin-bottom:3px}
+.sec-h{font-family:'Bebas Neue';font-size:22px;color:var(--white);letter-spacing:1px;margin-bottom:12px}
+
+/* ════════════ HOME ════════════ */
+.hero{text-align:center;padding:10px 0 8px}
+.hero-ring{width:86px;height:86px;border-radius:50%;border:2px solid rgba(0,152,234,.2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;animation:spin 8s linear infinite;position:relative}
+.hero-ring::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(0,152,234,.06)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-inner{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,#081828,#082818);border:1.5px solid rgba(0,152,234,.3);display:flex;align-items:center;justify-content:center;font-size:30px;animation:spin 8s linear infinite reverse;box-shadow:0 0 20px rgba(0,152,234,.15)}
+.hero-title{font-family:'Bebas Neue';font-size:19px;color:var(--white);letter-spacing:1px}
+.hero-title span{color:var(--gold)}
+
+.bal-card{background:linear-gradient(135deg,rgba(12,18,32,.9),rgba(16,24,40,.9));border:1px solid var(--border);border-radius:20px;padding:14px 16px;margin:10px 0;position:relative;overflow:hidden}
+.bal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ton),transparent)}
+.bal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.bal-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px}
+.bal-live{font-size:9px;color:var(--green);display:flex;align-items:center;gap:3px}
+.bal-dot{width:5px;height:5px;background:var(--green);border-radius:50%;animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.bal-amount{font-family:'Bebas Neue';font-size:44px;color:var(--gold);text-shadow:0 0 28px rgba(255,215,0,.45);line-height:1;letter-spacing:2px}
+.bal-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.bal-sub b{color:var(--green)}
+.prog-wrap{margin-top:10px}
+.prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px}
+.prog-pct{color:var(--ton);font-family:'Syne Mono'}
+.prog-track{height:5px;background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden}
+.prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--ton),var(--green));box-shadow:0 0 8px var(--ton);transition:width 1s ease;position:relative}
+.prog-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:16px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));animation:shim 1.5s infinite}
+@keyframes shim{0%,100%{opacity:0}50%{opacity:1}}
+
+.stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.sc{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:9px 6px;text-align:center;position:relative;overflow:hidden}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.sc.c1::after{background:var(--ton)}.sc.c2::after{background:var(--gold)}.sc.c3::after{background:var(--green)}
+.sc-ico{font-size:16px;margin-bottom:2px}
+.sc-val{font-family:'Bebas Neue';font-size:16px;color:var(--white);letter-spacing:1px}
+.sc-lbl{font-family:'Syne Mono';font-size:8px;color:var(--muted);letter-spacing:.5px}
+
+.mine-card{background:linear-gradient(135deg,#07100A,#070A10);border:1px solid rgba(0,152,234,.18);border-radius:16px;padding:11px 13px;display:flex;align-items:center;gap:11px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.mine-card:active{transform:scale(.98)}
+.mc-ico{width:46px;height:46px;background:linear-gradient(135deg,#081828,#082030);border:1.5px solid rgba(0,152,234,.25);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 0 12px rgba(0,152,234,.15);flex-shrink:0}
+.mc-info{flex:1}
+.mc-name{font-family:'Syne Mono';font-size:10px;color:var(--ton);margin-bottom:2px;letter-spacing:1px}
+.mc-cps{font-size:11px;color:var(--muted)}
+.mc-badge{font-family:'Syne Mono';font-size:8px;background:rgba(0,152,234,.08);border:1px solid rgba(0,152,234,.15);color:var(--ton);padding:2px 7px;border-radius:20px;margin-top:3px;display:inline-block}
+.mc-arr{color:var(--muted);font-size:18px}
+
+.abtn{border-radius:14px;padding:12px 15px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;margin-bottom:8px;position:relative;overflow:hidden}
+.abtn:active{transform:scale(.98)}
+.abtn-ton{background:linear-gradient(135deg,#031828,#041030);border:1px solid var(--ton)}
+.abtn-gold{background:linear-gradient(135deg,#180F00,#241500);border:1px solid var(--gold2)}
+.abtn-ico{font-size:21px;flex-shrink:0}
+.abtn-body{flex:1}
+.abtn-title{font-size:13px;font-weight:700;color:var(--white)}
+.abtn-desc{font-size:10px;color:var(--muted);margin-top:1px}
+.abtn-tag{font-family:'Syne Mono';font-size:11px;padding:3px 9px;border-radius:20px;flex-shrink:0}
+.tag-ton{color:var(--ton);background:rgba(0,152,234,.1);border:1px solid rgba(0,152,234,.2)}
+.tag-gold{color:var(--gold);background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2)}
+
+/* ════════════ ADS ════════════ */
+.ad-card{background:linear-gradient(135deg,#06080F,#0C0818);border:1px solid rgba(124,77,255,.22);border-radius:18px;overflow:hidden;margin-bottom:10px}
+.ad-vid{height:140px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.ad-vid::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(124,77,255,.12),transparent 60%)}
+.ad-timer-badge{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.7);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-family:'Syne Mono';font-size:12px;color:#fff;display:none}
+.ad-play{width:54px;height:54px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;color:var(--white);transition:all .2s;position:relative;z-index:1}
+.ad-play:active{transform:scale(.95)}
+.ad-rbar{padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+.ad-rtxt{font-size:11px;color:var(--text)}
+.ad-ramt{font-family:'Bebas Neue';font-size:18px;color:var(--gold);letter-spacing:1px;text-shadow:0 0 12px rgba(255,215,0,.4)}
+
+.claim-btn{background:linear-gradient(135deg,#031828,#041030);border:1.5px solid var(--ton);border-radius:14px;padding:14px;text-align:center;cursor:pointer;margin-bottom:10px;transition:all .2s;opacity:.4;pointer-events:none}
+.claim-btn.ready{opacity:1;pointer-events:auto;box-shadow:0 0 20px rgba(0,152,234,.2);animation:pulse-btn .8s ease infinite}
+@keyframes pulse-btn{0%,100%{box-shadow:0 0 20px rgba(0,152,234,.2)}50%{box-shadow:0 0 30px rgba(0,152,234,.4)}}
+.claim-btn:active{transform:scale(.98)}
+.cb-t{font-family:'Bebas Neue';font-size:15px;color:var(--ton);letter-spacing:2px}
+.cb-s{font-size:10px;color:var(--muted);margin-top:2px}
+
+.ad-prog{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.ap-top{display:flex;justify-content:space-between;margin-bottom:7px}
+.ap-lbl{font-size:11px;color:var(--muted)}
+.ap-cnt{font-family:'Syne Mono';font-size:12px;color:var(--ton)}
+.ap-dots{display:flex;gap:3px;flex-wrap:wrap}
+.ap-dot{height:4px;flex:1;min-width:5px;max-width:13px;background:rgba(0,152,234,.08);border-radius:10px}
+.ap-dot.f{background:var(--ton);box-shadow:0 0 4px var(--ton)}
+
+.boost-card{background:linear-gradient(135deg,#100800,#180F00);border:1px solid rgba(255,165,0,.22);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:11px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.boost-card:active{transform:scale(.98)}
+.bc-ico{font-size:28px}
+.bc-body{flex:1}
+.bc-title{font-size:13px;font-weight:700;color:var(--white)}
+.bc-desc{font-size:10px;color:var(--muted)}
+.bc-tag{background:rgba(255,165,0,.12);border:1px solid rgba(255,165,0,.25);color:var(--gold2);font-family:'Syne Mono';font-size:11px;padding:3px 9px;border-radius:20px}
+
+.cooldown-card{background:rgba(255,61,87,.05);border:1px solid rgba(255,61,87,.2);border-radius:14px;padding:14px;text-align:center;display:none}
+.cc-title{font-family:'Bebas Neue';font-size:18px;color:var(--red);letter-spacing:1px;margin-bottom:4px}
+.cc-timer{font-family:'Syne Mono';font-size:28px;color:var(--white);font-weight:bold}
+.cc-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ════════════ MINE ════════════ */
+.rig-list{display:flex;flex-direction:column;gap:7px}
+.rig{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s}
+.rig:active{transform:scale(.98)}
+.rig.current{background:linear-gradient(135deg,rgba(0,152,234,.04),rgba(0,152,234,.01));border-color:rgba(0,152,234,.28)}
+.rig.locked{opacity:.4}
+.rig-ico{font-size:26px;width:40px;text-align:center;flex-shrink:0}
+.rig-info{flex:1}
+.rig-name{font-size:13px;font-weight:700;color:var(--white)}
+.rig-stat{font-size:10px;color:var(--muted);margin-top:1px}
+.rig-mult{font-family:'Syne Mono';font-size:9px;color:var(--ton);margin-top:2px}
+.rbadge{font-family:'Syne Mono';font-size:9px;padding:3px 8px;border-radius:20px}
+.rb-cur{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.25)}
+.rb-cost{background:rgba(255,215,0,.08);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
+.rb-lock{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid rgba(255,255,255,.08)}
+
+/* ════════════ MISSIONS ════════════ */
+.ms-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;margin-bottom:7px;transition:all .15s}
+.ms-card.done{opacity:.5}
+.ms-ico-w{width:40px;height:40px;background:rgba(0,152,234,.06);border:1px solid rgba(0,152,234,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.ms-info{flex:1}
+.ms-title{font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px}
+.ms-bar{height:3px;background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden}
+.ms-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--ton),var(--green))}
+.ms-sub{font-family:'Syne Mono';font-size:9px;color:var(--muted);margin-top:3px}
+.ms-tag{font-family:'Syne Mono';font-size:10px;color:var(--gold);background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.18);padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+
+/* ════════════ RANKING ════════════ */
+.season-card{background:linear-gradient(135deg,#080A1A,#0C0818);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sl-lbl{font-family:'Syne Mono';font-size:9px;color:rgba(168,85,247,.8);letter-spacing:2px}
+.sl-sub{font-size:10px;color:var(--muted);margin-top:2px}
+.sr-time{font-family:'Bebas Neue';font-size:18px;color:var(--white);letter-spacing:1px}
+.sr-sub{font-size:9px;color:var(--muted);text-align:right;margin-top:2px}
+
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin-bottom:14px;padding:0 4px}
+.pod{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;border:2px solid;margin-bottom:2px}
+.pod1 .pod-av{width:44px;height:44px;border-color:var(--gold);box-shadow:0 0 14px rgba(255,215,0,.35)}
+.pod2 .pod-av{width:36px;height:36px;border-color:#C0C0C0}
+.pod3 .pod-av{width:32px;height:32px;border-color:#CD7F32}
+.pod-name{font-size:9px;color:var(--text);font-weight:700;text-align:center;max-width:70px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod-coins{font-family:'Syne Mono';font-size:9px;color:var(--gold)}
+.pod-block{width:100%;border-radius:7px 7px 0 0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:18px;color:rgba(255,255,255,.06)}
+.pod1 .pod-block{height:52px;background:linear-gradient(180deg,#261800,#160E00);border:1px solid rgba(255,215,0,.15)}
+.pod2 .pod-block{height:38px;background:linear-gradient(180deg,#202020,#141414);border:1px solid rgba(200,200,200,.1)}
+.pod3 .pod-block{height:28px;background:linear-gradient(180deg,#1A0E06,#100800);border:1px solid rgba(205,127,50,.1)}
+
+.rr{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.rr.me{background:rgba(0,152,234,.04);border-color:rgba(0,152,234,.25)}
+.rr-pos{font-family:'Syne Mono';font-size:10px;color:var(--muted);width:16px;text-align:center}
+.rr-av{font-size:17px}
+.rr-name{flex:1;font-size:12px;font-weight:700;color:var(--text)}
+.rr.me .rr-name{color:var(--ton)}
+.rr-amt{font-family:'Syne Mono';font-size:10px;color:var(--gold)}
+
+/* ════════════ WITHDRAW ════════════ */
+.wd-hero{background:linear-gradient(135deg,#040E06,#04080E);border:1px solid rgba(0,152,234,.18);border-radius:20px;padding:18px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
+.wd-hero::before{content:'';position:absolute;top:-40px;left:50%;transform:translateX(-50%);width:160px;height:160px;background:radial-gradient(circle,rgba(0,152,234,.08),transparent 70%);pointer-events:none}
+.wd-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px}
+.wd-amt{font-family:'Bebas Neue';font-size:46px;color:var(--ton);text-shadow:0 0 28px rgba(0,152,234,.4);line-height:1;letter-spacing:2px}
+.wd-unit{font-family:'Syne Mono';font-size:10px;color:var(--muted);margin-top:2px}
+.wd-eur{font-size:14px;color:var(--muted);margin-top:8px}
+.wd-eur span{color:var(--green);font-weight:700}
+
+.wd-method{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
+.wd-method:active{transform:scale(.98)}
+.wd-method.sel{border-color:var(--ton);background:rgba(0,152,234,.04)}
+.wm-top{display:flex;align-items:center;gap:8px}
+.wm-ico{font-size:20px}
+.wm-name{font-size:13px;font-weight:700;color:var(--white)}
+.wm-note{font-size:10px;color:var(--muted);margin-top:3px}
+
+.inp-wrap{margin:10px 0}
+.inp-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:5px}
+.inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:11px;padding:11px 13px;font-size:13px;color:var(--text);font-family:'Space Grotesk';outline:none}
+.inp:focus{border-color:rgba(0,152,234,.3)}
+.inp::placeholder{color:var(--muted)}
+
+.submit-btn{background:linear-gradient(135deg,#031828,#031020);border:1.5px solid var(--ton);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;margin-top:4px}
+.submit-btn:active{transform:scale(.98)}
+.sb-t{font-family:'Bebas Neue';font-size:15px;color:var(--ton);letter-spacing:2px}
+
+.payout-row{display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--panel);border:1px solid var(--border);border-radius:11px;margin-bottom:5px}
+.pr-av{font-size:17px}
+.pr-info{flex:1}
+.pr-name{font-size:11px;font-weight:700;color:var(--text)}
+.pr-time{font-family:'Syne Mono';font-size:9px;color:var(--muted)}
+.pr-amt{font-family:'Syne Mono';font-size:11px;color:var(--ton);font-weight:700}
+
+/* ════════════ REFERRAL ════════════ */
+.ref-hero{background:linear-gradient(135deg,#080C1A,#0C0818);border:1px solid rgba(168,85,247,.2);border-radius:18px;padding:16px;text-align:center;margin-bottom:12px}
+.ref-ico{font-size:38px;margin-bottom:6px}
+.ref-title{font-family:'Bebas Neue';font-size:15px;color:var(--purple);letter-spacing:2px;margin-bottom:4px}
+.ref-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.ref-link{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:7px;margin-top:11px;cursor:pointer;transition:all .15s}
+.ref-link:active{transform:scale(.98)}
+.ref-link-txt{flex:1;font-family:'Syne Mono';font-size:10px;color:var(--ton);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-copy{font-family:'Syne Mono';font-size:8px;background:rgba(0,152,234,.08);border:1px solid rgba(0,152,234,.2);color:var(--ton);padding:3px 7px;border-radius:20px;flex-shrink:0;letter-spacing:1px}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.rs{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
+.rs-val{font-family:'Bebas Neue';font-size:24px;color:var(--white);letter-spacing:1px;margin-bottom:2px}
+.rs-lbl{font-size:10px;color:var(--muted)}
+
+/* ════════════ CHAT ════════════ */
+.chat-screen{display:flex;flex-direction:column;height:100%}
+.chat-hdr{padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ch-left{display:flex;align-items:center;gap:6px}
+.ch-dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green)}
+.ch-title{font-family:'Bebas Neue';font-size:13px;color:var(--white);letter-spacing:2px}
+.ch-online{font-family:'Syne Mono';font-size:9px;color:var(--muted)}
+.chat-msgs{flex:1;overflow-y:auto;padding:9px 11px;display:flex;flex-direction:column;gap:6px;scrollbar-width:none}
+.chat-msgs::-webkit-scrollbar{display:none}
+.chat-msg{display:flex;gap:7px;animation:fi .2s ease}
+.chat-msg.mine{flex-direction:row-reverse}
+.cm-av-w{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+.cm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid var(--border)}
+.cm-un{font-family:'Syne Mono';font-size:7px;color:var(--muted);white-space:nowrap}
+.cm-bw{max-width:76%}
+.cm-bub{background:var(--panel);border:1px solid var(--border);border-radius:13px;border-bottom-left-radius:3px;padding:7px 10px;font-size:11px;color:var(--text);line-height:1.5}
+.chat-msg.mine .cm-bub{background:linear-gradient(135deg,#031828,#03101A);border-color:rgba(0,152,234,.15);border-bottom-left-radius:13px;border-bottom-right-radius:3px}
+.cm-bub.sys{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.2);color:rgba(168,85,247,.9);text-align:center;font-family:'Syne Mono';font-size:9px;letter-spacing:1px;width:100%}
+.cm-meta{display:flex;align-items:center;gap:4px;margin-top:2px}
+.cm-time{font-family:'Syne Mono';font-size:8px;color:var(--muted)}
+.cm-badge{font-size:7px;padding:1px 4px;border-radius:8px}
+.badge-ton{background:rgba(0,152,234,.1);color:var(--ton);border:1px solid rgba(0,152,234,.2)}
+.badge-gold{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
+.badge-green{background:rgba(0,230,118,.08);color:var(--green);border:1px solid rgba(0,230,118,.2)}
+.chat-msg.mine .cm-meta{flex-direction:row-reverse}
+.chat-inp{padding:7px 11px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(6,9,15,.95)}
+.ci-f{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;padding:7px 12px;font-size:11px;color:var(--text);font-family:'Space Grotesk';outline:none}
+.ci-f:focus{border-color:rgba(0,152,234,.25)}
+.ci-f::placeholder{color:var(--muted)}
+.ci-send{width:32px;height:32px;background:linear-gradient(135deg,#031828,#030A14);border:1px solid var(--ton);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--ton);transition:all .2s;flex-shrink:0}
+.ci-send:active{transform:scale(.95)}
+</style>
+</head>
+<body>
+
+<div id="load">
+  <div class="load-ico">⛏️</div>
+  <div class="load-title">CRYPTO MINER EMPIRE</div>
+  <div class="load-sub">CARGANDO...</div>
+  <div class="load-bar"><div class="load-fill" id="lf"></div></div>
+</div>
+
+<div id="app">
+  <div class="ticker">
+    <div class="tk-track" id="ticker"></div>
+  </div>
+
+  <div class="toast" id="toast">
+    <span id="tIco">✅</span><span id="tTxt">msg</span>
+  </div>
+
+  <div class="content">
+
+    <!-- HOME -->
+    <div class="sv on" id="sv-home">
+      <div class="hero">
+        <div class="hero-ring"><div class="hero-inner">⛏️</div></div>
+        <div class="hero-title">CRYPTO MINER <span>EMPIRE</span></div>
+      </div>
+      <div class="bal-card">
+        <div class="bal-top">
+          <span class="bal-lbl">BALANCE</span>
+          <span class="bal-live"><span class="bal-dot"></span>produciendo</span>
+        </div>
+        <div class="bal-amount" id="bCoins">—</div>
+        <div class="bal-sub">monedas 🪙 · vale <b id="bEur">—</b></div>
+        <div class="prog-wrap">
+          <div class="prog-labels"><span>Objetivo: 1.000🪙</span><span class="prog-pct" id="bPct">—%</span></div>
+          <div class="prog-track"><div class="prog-fill" id="pBar" style="width:0%"></div></div>
+        </div>
+      </div>
+      <div class="stats3">
+        <div class="sc c1"><div class="sc-ico">🔥</div><div class="sc-val" id="sStreak">—</div><div class="sc-lbl">RACHA</div></div>
+        <div class="sc c2"><div class="sc-ico">📺</div><div class="sc-val" id="sAds">—</div><div class="sc-lbl">ADS HOY</div></div>
+        <div class="sc c3"><div class="sc-ico">👥</div><div class="sc-val" id="sRefs">—</div><div class="sc-lbl">AMIGOS</div></div>
+      </div>
+      <div class="mine-card" onclick="sw('mine')">
+        <div class="mc-ico">🖥️</div>
+        <div class="mc-info">
+          <div class="mc-name" id="mName">—</div>
+          <div class="mc-cps" id="mCps">—</div>
+          <div class="mc-badge" id="mBadge">—</div>
+        </div>
+        <div class="mc-arr">›</div>
+      </div>
+      <div class="abtn abtn-ton" onclick="sw('ads')">
+        <span class="abtn-ico">📺</span>
+        <div class="abtn-body"><div class="abtn-title">Ver Anuncio</div><div class="abtn-desc">Gana monedas al instante</div></div>
+        <div class="abtn-tag tag-ton" id="adTag">+5 🪙</div>
+      </div>
+      <div class="abtn abtn-gold" onclick="activateBoost()">
+        <span class="abtn-ico">🚀</span>
+        <div class="abtn-body"><div class="abtn-title">Boost x2 — 10 min</div><div class="abtn-desc" id="boostDesc">Duplica tus monedas por anuncio</div></div>
+        <div class="abtn-tag tag-gold" id="boostTag">x2</div>
+      </div>
+    </div>
+
+    <!-- ADS -->
+    <div class="sv" id="sv-ads">
+      <div class="sec-lbl">GANAR MONEDAS</div>
+      <div class="sec-h">Ver Anuncios</div>
+      <div class="ad-card">
+        <div class="ad-vid">
+          <div class="ad-timer-badge" id="adTimer">⏱ 30s</div>
+          <div class="ad-play" id="adPlayBtn" onclick="openAd()">▶</div>
+        </div>
+        <div class="ad-rbar">
+          <span class="ad-rtxt">Recompensa garantizada</span>
+          <span class="ad-ramt" id="adAmt">+5🪙</span>
+        </div>
+      </div>
+      <div class="claim-btn" id="claimBtn" onclick="claimAd()">
+        <div class="cb-t" id="cbT">⏳ ABRE EL ANUNCIO PRIMERO</div>
+        <div class="cb-s" id="cbS">Toca el botón ▶ para ver el anuncio</div>
+      </div>
+      <div class="boost-card" onclick="openBoostAd()">
+        <span class="bc-ico">🚀</span>
+        <div class="bc-body"><div class="bc-title">Boost x2 — 10 minutos</div><div class="bc-desc">Ver un anuncio activa x2 en todo</div></div>
+        <span class="bc-tag">x2</span>
+      </div>
+      <div class="cooldown-card" id="cooldownCard">
+        <div class="cc-title">⏰ PRÓXIMO ANUNCIO</div>
+        <div class="cc-timer" id="cooldownTimer">00:45</div>
+        <div class="cc-sub">Vuelve cuando termine el contador</div>
+      </div>
+      <div class="ad-prog">
+        <div class="ap-top"><span class="ap-lbl">Anuncios hoy</span><span class="ap-cnt" id="apCnt">— / 20</span></div>
+        <div class="ap-dots" id="apDots"></div>
+      </div>
+    </div>
+
+    <!-- MINE -->
+    <div class="sv" id="sv-mine">
+      <div class="sec-lbl">TU EQUIPO</div>
+      <div class="sec-h">Mejora tu Mina</div>
+      <div class="rig-list" id="rigList"></div>
+    </div>
+
+    <!-- MISSIONS -->
+    <div class="sv" id="sv-missions">
+      <div class="sec-lbl">PROGRESO</div>
+      <div class="sec-h">Misiones</div>
+      <div id="missionsList"><div style="text-align:center;color:var(--muted);padding:20px;font-family:Syne Mono;font-size:11px">Cargando...</div></div>
+    </div>
+
+    <!-- RANKING -->
+    <div class="sv" id="sv-ranking">
+      <div class="season-card">
+        <div><div class="sl-lbl">TEMPORADA 1</div><div class="sl-sub">Top 5 recibe premios</div></div>
+        <div><div class="sr-time" id="seasonTimer">—</div><div class="sr-sub">restantes</div></div>
+      </div>
+      <div class="podium" id="podium"></div>
+      <div id="rankList"></div>
+    </div>
+
+    <!-- WITHDRAW -->
+    <div class="sv" id="sv-withdraw">
+      <div class="sec-lbl">COBRAR</div>
+      <div class="sec-h">Retirar Dinero</div>
+      <div class="wd-hero">
+        <div class="wd-lbl">TUS MONEDAS</div>
+        <div class="wd-amt" id="wdCoins">—</div>
+        <div class="wd-unit">monedas 🪙</div>
+        <div class="wd-eur">Equivale a <span id="wdEur">—</span></div>
+      </div>
+      <div id="wdContent"></div>
+    </div>
+
+    <!-- REFERRAL -->
+    <div class="sv" id="sv-referral">
+      <div class="sec-lbl">CRECER JUNTOS</div>
+      <div class="sec-h">Referidos</div>
+      <div class="ref-hero">
+        <div class="ref-ico">👥</div>
+        <div class="ref-title">INVITA Y GANA PARA SIEMPRE</div>
+        <div class="ref-desc">+<b style="color:var(--ton)" id="refBonus">50</b>🪙 al instante y <b style="color:var(--ton)" id="refPct">3</b>% de sus ganancias forever</div>
+        <div class="ref-link" onclick="copyLink()">
+          <span class="ref-link-txt" id="refLinkTxt">Cargando...</span>
+          <span class="ref-copy">COPIAR</span>
+        </div>
+      </div>
+      <div class="ref-stats">
+        <div class="rs"><div class="rs-val" id="refCount">—</div><div class="rs-lbl">Invitados</div></div>
+        <div class="rs"><div class="rs-val" id="refEarned" style="color:var(--gold)">—🪙</div><div class="rs-lbl">Ganado</div></div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px 15px">
+        <div style="font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:9px">QUÉ GANAS</div>
+        <div style="font-size:12px;color:var(--text);line-height:2">
+          ⚡ +<span id="refBonus2">50</span>🪙 al instante por referido<br>
+          ♾️ <span id="refPct2">3</span>% de sus ganancias para siempre<br>
+          🎯 Misión "Invitar amigo" +100🪙
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="sv" id="sv-chat" style="height:100%;padding:0">
+      <div class="chat-screen">
+        <div class="chat-hdr">
+          <div class="ch-left">
+            <div class="ch-dot"></div>
+            <div><div class="ch-title">CHAT COMUNIDAD</div><div class="ch-online" id="chatOnline">Cargando...</div></div>
+          </div>
+          <div style="font-family:'Syne Mono';font-size:8px;background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.2);color:#ff6680;padding:2px 7px;border-radius:20px">📋 REGLAS</div>
+        </div>
+        <div class="chat-msgs" id="chatMsgs"></div>
+        <div class="chat-inp">
+          <input class="ci-f" id="chatInput" placeholder="Escribe un mensaje..." maxlength="200">
+          <div class="ci-send" onclick="sendChat()">➤</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <div class="ni on" id="ni-home" onclick="sw('home')"><span class="ni-ico">🏠</span><span class="ni-lbl">INICIO</span></div>
+    <div class="ni" id="ni-ads" onclick="sw('ads')"><span class="ni-ico">📺</span><span class="ni-lbl">GANAR</span></div>
+    <div class="ni" id="ni-missions" onclick="sw('missions');loadMissions()"><span class="ni-ico">🎯</span><span class="ni-lbl">MISIONES</span></div>
+    <div class="ni" id="ni-ranking" onclick="sw('ranking');loadRanking()"><span class="ni-ico">🏆</span><span class="ni-lbl">RANK</span></div>
+    <div class="ni" id="ni-withdraw" onclick="sw('withdraw')"><span class="ni-ico">💸</span><span class="ni-lbl">COBRAR</span></div>
+  </div>
+</div>
+
+<script>
+// ── TELEGRAM ──────────────────────────────────────────────
+const tg = window.Telegram?.WebApp;
+if(tg){tg.ready();tg.expand();tg.setHeaderColor('#06090F');tg.setBackgroundColor('#06090F');}
+const initData = tg?.initData || '';
+
+// ── API ────────────────────────────────────────────────────
+async function api(path,method='GET',body=null){
+  const opts={method,headers:{'Content-Type':'application/json','X-Telegram-Init-Data':initData}};
+  if(body) opts.body=JSON.stringify(body);
+  const r=await fetch(path,opts);
+  return r.json();
+}
+
+// ── STATE ──────────────────────────────────────────────────
+let userData=null, coinVal=0, rcps=0;
+let adOpenTime=0, adMinSecs=30, adRewardMin=4, adRewardMax=6;
+let adCountdownInterval=null, cooldownInterval=null;
+let selMethod=null, refLink='';
+
+// ── MINES CONFIG ───────────────────────────────────────────
+const MINES=[
+  {lvl:1,ico:'🖥️',name:'GPU Básica',cps:'0.0001',cost:0},
+  {lvl:2,ico:'🎮',name:'GPU Gamer',cps:'0.0003',cost:200},
+  {lvl:3,ico:'⛏️',name:'Granja Minera',cps:'0.0008',cost:800},
+  {lvl:4,ico:'🏭',name:'Data Center',cps:'0.002',cost:3000},
+  {lvl:5,ico:'🌐',name:'Super Cluster',cps:'0.005',cost:10000},
+];
+
+// ── LOAD USER ──────────────────────────────────────────────
+async function loadUser(){
+  try{
+    const d=await api('/api/user');
+    if(d.error){showToast('❌','Error: '+d.error);return;}
+    userData=d;
+    coinVal=d.coins;
+    rcps=d.mine_rcps;
+    updateHomeUI(d);
+    updateWithdrawUI(d);
+    loadReferral();
+  }catch(e){showToast('❌','Error de conexión');}
+}
+
+function updateHomeUI(d){
+  const pct=Math.min(d.coins/1000*100,100);
+  document.getElementById('bCoins').textContent=Math.floor(d.coins).toLocaleString('es');
+  document.getElementById('bEur').textContent=(d.coins/1000).toFixed(3)+'€';
+  document.getElementById('bPct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('pBar').style.width=pct+'%';
+  document.getElementById('sStreak').textContent=d.streak;
+  document.getElementById('sAds').textContent=d.ads_today+'/'+d.ads_max;
+  document.getElementById('sRefs').textContent=d.referrals;
+  document.getElementById('mName').textContent=(d.mine_name||'GPU Básica').toUpperCase();
+  document.getElementById('mCps').textContent='+'+d.mine_rcps.toFixed(6)+' monedas/seg';
+  document.getElementById('mBadge').textContent='NV.'+d.mine_level+' · Racha +'+d.streak_bonus+'%';
+  document.getElementById('adTag').textContent='+'+adRewardMin+'-'+adRewardMax+' 🪙';
+  document.getElementById('adAmt').textContent='+'+adRewardMin+'-'+adRewardMax+'🪙';
+  if(d.boost_active){
+    document.getElementById('boostTag').textContent='x2 '+d.boost_mins+'m';
+    document.getElementById('boostDesc').textContent='Boost activo: '+d.boost_mins+' min restantes';
+  }
+  buildRigs(d.mine_level, d.coins);
+  document.getElementById('apCnt').textContent=d.ads_today+' / '+d.ads_max;
+  buildDots(d.ads_today,d.ads_max);
+}
+
+function buildRigs(curLevel,coins){
+  const el=document.getElementById('rigList');
+  if(!el)return;
+  el.innerHTML=MINES.map(m=>{
+    const isCur=m.lvl===curLevel;
+    const isLocked=m.lvl>curLevel+1;
+    const canBuy=m.lvl===curLevel+1&&coins>=m.cost;
+    let badge=isCur?'<span class="rbadge rb-cur">ACTUAL</span>':
+      isLocked?'<span class="rbadge rb-lock">'+m.cost.toLocaleString('es')+' 🪙</span>':
+      '<span class="rbadge rb-cost">'+m.cost.toLocaleString('es')+' 🪙</span>';
+    return`<div class="rig ${isCur?'current':''} ${isLocked?'locked':''}" ${!isLocked&&!isCur?'onclick="upgradeMine('+m.lvl+','+m.cost+')"':''}>
+      <span class="rig-ico">${m.ico}</span>
+      <div class="rig-info">
+        <div class="rig-name">${m.name}</div>
+        <div class="rig-stat">+${m.cps} monedas/seg</div>
+        <div class="rig-mult">${m.lvl}× ${isCur?'(actual)':m.lvl>1?'más rápido':''}</div>
+      </div>
+      ${badge}
+    </div>`;
+  }).join('');
+}
+
+async function upgradeMine(lvl,cost){
+  if(!userData||userData.coins<cost){showToast('❌','Monedas insuficientes');return;}
+  showToast('⬆️','Mejorando mina...');
+  await loadUser();
+}
+
+// ── ADS ────────────────────────────────────────────────────
+async function openAd(){
+  try{
+    const r=await api('/api/ad/open','POST');
+    if(r.error){
+      if(r.error==='cooldown'){showCooldown(r.seconds);return;}
+      if(r.error==='hour_limit'){showCooldown(r.seconds);return;}
+      if(r.error==='daily_limit'){showToast('🚫','Límite diario alcanzado. ¡Vuelve mañana!');return;}
+      showToast('❌',r.error);return;
+    }
+    adOpenTime=Date.now();
+    adMinSecs=r.min_secs||30;
+    adRewardMin=r.reward_min||4;
+    adRewardMax=r.reward_max||6;
+    window.open(r.link,'_blank');
+    startAdCountdown(adMinSecs);
+    hideCooldown();
+  }catch(e){showToast('❌','Error de conexión');}
+}
+
+async function openBoostAd(){
+  showToast('🚀','¡Abriendo anuncio boost!');
+  await openAd();
+}
+
+async function activateBoost(){
+  await openBoostAd();
+}
+
+function startAdCountdown(secs){
+  const timer=document.getElementById('adTimer');
+  const btn=document.getElementById('claimBtn');
+  const t=document.getElementById('cbT');
+  const s=document.getElementById('cbS');
+  if(timer)timer.style.display='block';
+  if(btn)btn.classList.remove('ready');
+  clearInterval(adCountdownInterval);
+  let rem=secs;
+  adCountdownInterval=setInterval(()=>{
+    rem--;
+    const m=Math.floor(rem/60),sc=rem%60;
+    const txt=m>0?`⏱ ${m}m ${sc}s`:`⏱ ${rem}s`;
+    if(timer)timer.textContent=txt;
+    if(t)t.textContent=`⏳ ESPERA ${rem} SEGUNDOS`;
+    if(rem<=0){
+      clearInterval(adCountdownInterval);
+      if(timer)timer.style.display='none';
+      if(btn)btn.classList.add('ready');
+      if(t)t.textContent='✅ RECLAMAR RECOMPENSA';
+      if(s)s.textContent='¡Tiempo completado! Toca para cobrar';
+      tg?.HapticFeedback?.notificationOccurred('success');
+    }
+  },1000);
+}
+
+async function claimAd(){
+  const btn=document.getElementById('claimBtn');
+  if(!btn?.classList.contains('ready'))return;
+  try{
+    const r=await api('/api/ad/claim','POST');
+    if(r.error){
+      if(r.error==='too_fast')showToast('⏳',`Espera ${r.remaining}s más`);
+      else showToast('❌','Error: '+r.error);
+      return;
+    }
+    coinVal+=r.coins_earned;
+    updateBalance();
+    showToast('✅','+'+r.coins_earned+' monedas ganadas! 🪙');
+    btn.classList.remove('ready');
+    document.getElementById('cbT').textContent='⏳ ABRE EL ANUNCIO PRIMERO';
+    document.getElementById('cbS').textContent='Toca el botón ▶ para ver el anuncio';
+    document.getElementById('apCnt').textContent=r.ads_today+' / 20';
+    buildDots(r.ads_today,20);
+    if(r.missions_completed?.length>0)
+      setTimeout(()=>showToast('🎯','¡Misión completada! +bonus 🪙'),1500);
+    tg?.HapticFeedback?.notificationOccurred('success');
+  }catch(e){showToast('❌','Error de conexión');}
+}
+
+function showCooldown(secs){
+  const card=document.getElementById('cooldownCard');
+  if(card)card.style.display='block';
+  let rem=secs;
+  clearInterval(cooldownInterval);
+  const el=document.getElementById('cooldownTimer');
+  const update=()=>{
+    const m=Math.floor(rem/60),s=String(rem%60).padStart(2,'0');
+    if(el)el.textContent=m>0?`${m}:${s}`:`00:${s}`;
+    if(rem<=0){clearInterval(cooldownInterval);hideCooldown();loadUser();}
+    rem--;
+  };
+  update();
+  cooldownInterval=setInterval(update,1000);
+}
+
+function hideCooldown(){
+  const card=document.getElementById('cooldownCard');
+  if(card)card.style.display='none';
+}
+
+function buildDots(filled,max){
+  const c=document.getElementById('apDots');
+  if(!c)return;
+  c.innerHTML='';
+  for(let i=0;i<max;i++){
+    const d=document.createElement('div');
+    d.className='ap-dot'+(i<filled?' f':'');
+    c.appendChild(d);
+  }
+}
+
+// ── MISSIONS ───────────────────────────────────────────────
+async function loadMissions(){
+  const el=document.getElementById('missionsList');
+  el.innerHTML='<div style="text-align:center;color:var(--muted);padding:20px;font-family:Syne Mono;font-size:11px">Cargando...</div>';
+  try{
+    const r=await api('/api/missions');
+    const icons={ads:'📺',upgrade:'⛏️',referral:'👥',streak:'🔥',withdraw:'💸'};
+    el.innerHTML=r.missions.map(m=>`
+      <div class="ms-card ${m.done?'done':''}">
+        <div class="ms-ico-w">${m.done?'✅':icons[m.type]||'🎯'}</div>
+        <div class="ms-info">
+          <div class="ms-title">${m.done?`<s style="opacity:.5">${m.desc}</s>`:m.desc}</div>
+          <div class="ms-bar"><div class="ms-fill" style="width:${m.done?100:0}%"></div></div>
+          <div class="ms-sub">${m.done?'✅ Completada':'Pendiente'}</div>
+        </div>
+        <span class="ms-tag">+${m.reward} 🪙</span>
+      </div>`).join('');
+  }catch(e){el.innerHTML='<div style="color:var(--red);padding:20px;text-align:center">Error al cargar</div>';}
+}
+
+// ── RANKING ────────────────────────────────────────────────
+const MEDALS=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
+async function loadRanking(){
+  try{
+    const r=await api('/api/ranking');
+    const top3=r.ranking.slice(0,3);
+    const rest=r.ranking.slice(3);
+    const order=[top3[1],top3[0],top3[2]].filter(Boolean);
+    const cls=['pod2','pod1','pod3'];
+    const h=[38,52,28];
+    document.getElementById('podium').innerHTML=order.map((u,i)=>`
+      <div class="pod ${cls[i]}">
+        <div class="pod-av">${u.is_me?'⚡':'👤'}</div>
+        <div class="pod-name">${u.name}</div>
+        <div class="pod-coins">${u.coins.toLocaleString('es')}🪙</div>
+        <div class="pod-block" style="height:${h[i]}px">${u.pos}</div>
+      </div>`).join('');
+    document.getElementById('rankList').innerHTML=rest.map(u=>`
+      <div class="rr ${u.is_me?'me':''}">
+        <span class="rr-pos">${MEDALS[u.pos-1]||u.pos}</span>
+        <span class="rr-av">${u.is_me?'⚡':'👤'}</span>
+        <span class="rr-name">${u.name}${u.is_me?' 👈':''}</span>
+        <span class="rr-amt">${u.coins.toLocaleString('es')}🪙</span>
+      </div>`).join('');
+    // Season timer
+    const days=18,h_=4,m_=22;
+    document.getElementById('seasonTimer').textContent=`${days}d ${h_}h`;
+  }catch(e){}
+}
+
+// ── WITHDRAW ───────────────────────────────────────────────
+function updateWithdrawUI(d){
+  document.getElementById('wdCoins').textContent=Math.floor(d.coins).toLocaleString('es');
+  document.getElementById('wdEur').textContent='≈ <span style="color:var(--green)">'+(d.coins/1000).toFixed(3)+'€</span>';
+  document.getElementById('wdEur').innerHTML='≈ <span style="color:var(--green)">'+(d.coins/1000).toFixed(3)+'€</span>';
+  const wc=document.getElementById('wdContent');
+  if(d.can_withdraw){
+    wc.innerHTML=`
+      <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--green);margin-bottom:12px">
+        ✅ ¡Puedes retirar! Elige método:
+      </div>
+      <div class="wd-method" id="wm-paypal" onclick="pickMethod('paypal')">
+        <div class="wm-top"><span class="wm-ico">💳</span><span class="wm-name">PayPal</span></div>
+        <div class="wm-note">Pago a tu email en 24–72h</div>
+      </div>
+      <div class="wd-method" id="wm-usdt" onclick="pickMethod('usdt')">
+        <div class="wm-top"><span class="wm-ico">💎</span><span class="wm-name">Telegram Wallet (USDT)</span></div>
+        <div class="wm-note">USDT directo a tu wallet</div>
+      </div>
+      <div id="wdDetailWrap" style="display:none">
+        <div class="inp-wrap">
+          <div class="inp-lbl" id="wdInpLbl">EMAIL PAYPAL</div>
+          <input class="inp" id="wdInp" type="email" placeholder="tu@email.com">
+        </div>
+        <div class="submit-btn" onclick="submitWd()">
+          <div class="sb-t">✅ SOLICITAR RETIRO</div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:var(--muted);margin-top:10px;line-height:1.6">
+        ⏱️ Procesado en 24–72h<br>
+        🔒 Verificamos cada retiro manualmente
+      </div>`;
+  }else{
+    const miss=Math.max(0,1000-d.coins).toFixed(0);
+    wc.innerHTML=`
+      <div style="background:rgba(255,61,87,.06);border:1px solid rgba(255,61,87,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:#ff6680;margin-bottom:12px">
+        ❌ Te faltan <b>${miss} 🪙</b> para el mínimo.<br>
+        Sigue viendo anuncios diariamente.
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:10px">
+        <div style="font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px">MÉTODOS DISPONIBLES</div>
+        <div style="font-size:12px;color:var(--text);line-height:2">
+          💳 <b>PayPal</b> — Pago a tu email<br>
+          💎 <b>Telegram Wallet</b> — USDT directo<br>
+          <span style="color:var(--muted)">Mínimo: 1.000 🪙 = 1€</span>
+        </div>
+      </div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px 14px">
+        <div style="font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px">ÚLTIMOS PAGOS</div>
+        <div class="payout-row"><span class="pr-av">🧑</span><div class="pr-info"><div class="pr-name">CarlosM</div><div class="pr-time">hace 2h</div></div><span class="pr-amt">+1.00€ ✓</span></div>
+        <div class="payout-row"><span class="pr-av">👩</span><div class="pr-info"><div class="pr-name">Elena_R</div><div class="pr-time">hace 5h</div></div><span class="pr-amt">+1.20€ ✓</span></div>
+      </div>`;
+  }
+}
+
+function pickMethod(m){
+  document.querySelectorAll('.wd-method').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('wm-'+m)?.classList.add('sel');
+  selMethod=m;
+  const wrap=document.getElementById('wdDetailWrap');
+  const lbl=document.getElementById('wdInpLbl');
+  const inp=document.getElementById('wdInp');
+  if(wrap)wrap.style.display='block';
+  if(m==='paypal'){if(lbl)lbl.textContent='EMAIL DE PAYPAL';if(inp){inp.type='email';inp.placeholder='tu@email.com';}}
+  else{if(lbl)lbl.textContent='USERNAME TELEGRAM WALLET';if(inp){inp.type='text';inp.placeholder='@tuusername';}}
+}
+
+async function submitWd(){
+  const detail=document.getElementById('wdInp')?.value?.trim();
+  if(!detail){showToast('⚠️','Rellena los datos de pago');return;}
+  if(!selMethod){showToast('⚠️','Elige un método');return;}
+  try{
+    const r=await api('/api/withdraw/request','POST',{method:selMethod,detail});
+    if(r.success){showToast('✅','¡Retiro de '+r.amount_eur.toFixed(2)+'€ enviado!');setTimeout(()=>loadUser(),2000);}
+    else showToast('❌','Error: '+r.error);
+  }catch(e){showToast('❌','Error de conexión');}
+}
+
+// ── REFERRAL ───────────────────────────────────────────────
+async function loadReferral(){
+  try{
+    const r=await api('/api/referral');
+    refLink=r.link;
+    document.getElementById('refLinkTxt').textContent=r.link;
+    document.getElementById('refCount').textContent=r.count;
+    document.getElementById('refEarned').textContent=r.earned.toFixed(1)+'🪙';
+    document.getElementById('refBonus').textContent=r.bonus||50;
+    document.getElementById('refBonus2').textContent=r.bonus||50;
+    document.getElementById('refPct').textContent=r.pct||3;
+    document.getElementById('refPct2').textContent=r.pct||3;
+  }catch(e){}
+}
+
+function copyLink(){
+  if(navigator.clipboard)navigator.clipboard.writeText(refLink);
+  showToast('📋','¡Enlace copiado!');
+  tg?.HapticFeedback?.notificationOccurred('success');
+}
+
+// ── LIVE COUNTER ───────────────────────────────────────────
+function updateBalance(){
+  const v=coinVal;
+  document.getElementById('bCoins').textContent=Math.floor(v).toLocaleString('es');
+  const pct=Math.min(v/1000*100,100);
+  document.getElementById('pBar').style.width=pct+'%';
+  document.getElementById('bPct').textContent=pct.toFixed(1)+'%';
+  document.getElementById('bEur').textContent=(v/1000).toFixed(4)+'€';
+  const wc=document.getElementById('wdCoins');
+  if(wc)wc.textContent=Math.floor(v).toLocaleString('es');
+}
+setInterval(()=>{coinVal+=rcps;updateBalance();},1000);
+
+// ── TICKER ─────────────────────────────────────────────────
+const ticks=[
+  {c:'ti-g',t:'✅ @CarlosM retiró 1.00€'},
+  {c:'ti-b',t:'⛏️ @MinerPro alcanzó nivel 3'},
+  {c:'',    t:'🔥 @SatoshiG lleva 7 días de racha'},
+  {c:'ti-g',t:'✅ @Elena_R retiró 1.20€'},
+  {c:'ti-y',t:'🏆 @CryptoK lidera la temporada'},
+  {c:'ti-b',t:'⛏️ @LauraP mejoró a Data Center'},
+  {c:'ti-g',t:'✅ @HashM retiró 1.00€'},
+  {c:'',    t:'👥 @JuanC invitó 3 amigos'},
+  {c:'ti-g',t:'✅ @PedroL retiró 1.50€'},
+  {c:'ti-b',t:'🚀 @NoemiB activó Boost x2'},
+];
+(()=>{
+  const el=document.getElementById('ticker');
+  const d=[...ticks,...ticks];
+  el.innerHTML=d.map(t=>`<span class="ti ${t.c}">${t.t}</span>`).join('');
+})();
+
+// ── CHAT ───────────────────────────────────────────────────
+const CHAT_SEED=[
+  {av:'👑',name:'CryptoK',badge:'badge-gold',bl:'TOP 1',msg:'¡Acabo de retirar 1€! El bot paga de verdad 🔥',time:'10:02',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'⚡ @MinerPro alcanzó nivel 3',time:'10:04',sys:true},
+  {av:'😎',name:'MinerPro',badge:'badge-ton',bl:'LVL 3',msg:'Gracias!! 🚀 Ya casi llego al retiro',time:'10:05',mine:false},
+  {av:'🦊',name:'SatoshiG',badge:'badge-green',bl:'✓ PAGADA',msg:'Confirmado: pagan en 24h. Recibí mi PayPal ayer 👌',time:'10:07',mine:false},
+  {av:'🐺',name:'HashM',msg:'¿Cuánto tardáis en pagar?',time:'10:09',mine:false},
+  {av:'🦊',name:'SatoshiG',badge:'badge-green',bl:'✓ PAGADA',msg:'A mí menos de 24h',time:'10:10',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'✅ @CarlosM retiró 1.00€ · Pagado',time:'10:11',sys:true},
+  {av:'🦅',name:'ElMiner',msg:'Llevo 5 días de racha, el +15% nota mucho',time:'10:13',mine:false},
+  {av:'👩',name:'Elena_R',badge:'badge-ton',bl:'LVL 2',msg:'El boost x2 + anuncios es la mejor combo 💡',time:'10:15',mine:false},
+];
+let chatMsgs=[...CHAT_SEED];
+
+function renderChat(){
+  const el=document.getElementById('chatMsgs');
+  if(!el)return;
+  el.innerHTML=chatMsgs.map(m=>{
+    if(m.sys)return`<div class="chat-msg"><div class="cm-bw" style="width:100%"><div class="cm-bub sys">${m.msg}</div></div></div>`;
+    return`<div class="chat-msg${m.mine?' mine':''}">
+      <div class="cm-av-w"><div class="cm-av">${m.av}</div><div class="cm-un">${m.name.substring(0,8)}</div></div>
+      <div class="cm-bw"><div class="cm-bub">${m.msg}</div>
+      <div class="cm-meta"><span class="cm-time">${m.time}</span>${m.badge?`<span class="cm-badge ${m.badge}">${m.bl}</span>`:''}</div></div></div>`;
+  }).join('');
+  el.scrollTop=el.scrollHeight;
+}
+
+function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const txt=inp.value.trim();
+  if(!txt)return;
+  const banned=['estafa','scam','fake','robo','spam','hack'];
+  if(banned.some(w=>txt.toLowerCase().includes(w))){showToast('🚫','Mensaje bloqueado');inp.value='';return;}
+  const now=new Date();
+  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  chatMsgs.push({av:'⚡',name:'Tú',msg:txt,time,mine:true});
+  inp.value='';renderChat();
+  const replies=[
+    {av:'🦊',name:'SatoshiG',badge:'badge-green',bl:'✓ PAGADA',msg:'👍'},
+    {av:'😎',name:'MinerPro',badge:'badge-ton',bl:'LVL 3',msg:'Exacto! 💪'},
+    {av:'🦅',name:'ElMiner',msg:'Buena pregunta'},
+    {av:'👩',name:'Elena_R',badge:'badge-ton',bl:'LVL 2',msg:'💯'},
+    {av:'🐺',name:'HashM',msg:'De acuerdo'},
+  ];
+  setTimeout(()=>{
+    const r={...replies[Math.floor(Math.random()*replies.length)]};
+    r.time=new Date().getHours().toString().padStart(2,'0')+':'+new Date().getMinutes().toString().padStart(2,'0');
+    r.mine=false;chatMsgs.push(r);
+    if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);
+    renderChat();
+  },1200+Math.random()*800);
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('chatInput')===document.activeElement)sendChat();});
+
+const autoChats=[
+  {av:'🦊',name:'SatoshiG',badge:'badge-green',bl:'✓ PAGADA',msg:'Vi mis 20 anuncios hoy 😄',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'✅ @NoemiB retiró 1.20€ · Pagado',sys:true},
+  {av:'🐺',name:'HashM',msg:'El ranking está reñido esta semana 👀',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'👥 @JuanC invitó 3 amigos +150🪙',sys:true},
+  {av:'👩',name:'Elena_R',badge:'badge-ton',bl:'LVL 2',msg:'Activad el boost antes de los anuncios 💡',mine:false},
+];
+let autoIdx=0;
+setInterval(()=>{
+  const m={...autoChats[autoIdx%autoChats.length]};
+  const now=new Date();
+  m.time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  chatMsgs.push(m);
+  if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);
+  if(document.getElementById('sv-chat')?.classList.contains('on'))renderChat();
+  autoIdx++;
+},20000);
+
+// ── TOAST ──────────────────────────────────────────────────
+let toastT;
+function showToast(ico,msg){
+  const t=document.getElementById('toast');
+  document.getElementById('tIco').textContent=ico;
+  document.getElementById('tTxt').textContent=msg;
+  t.style.display='flex';
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>t.style.display='none',2800);
+}
+
+// ── NAV ────────────────────────────────────────────────────
+function sw(name){
+  document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+  document.getElementById('sv-'+name)?.classList.add('on');
+  document.getElementById('ni-'+name)?.classList.add('on');
+  if(name==='chat')renderChat();
+  if(name==='ads')buildDots(userData?.ads_today||0,20);
+}
+
+// ── INIT ───────────────────────────────────────────────────
+async function init(){
+  const fill=document.getElementById('lf');
+  let p=0;
+  const iv=setInterval(()=>{p=Math.min(p+12,90);if(fill)fill.style.width=p+'%';},200);
+  await loadUser();
+  clearInterval(iv);
+  if(fill)fill.style.width='100%';
+  await new Promise(r=>setTimeout(r,300));
+  document.getElementById('load').style.display='none';
+  document.getElementById('app').style.display='flex';
+  renderChat();
+  document.getElementById('chatOnline').textContent='👥 '+Math.floor(Math.random()*200+100)+' miembros · online';
+}
+
+init();
+</script>
+</body>
+</html>
