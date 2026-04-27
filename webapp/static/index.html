@@ -5,1149 +5,1178 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Crypto Miner Empire</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Syne+Mono&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#06090F;--panel:#0C1220;--panel2:#101828;
-  --border:rgba(0,152,234,.12);--ton:#0098EA;--ton2:#006BB3;
-  --gold:#FFD700;--gold2:#FFA500;--green:#00E676;--red:#FF3D57;
-  --purple:#A855F7;--text:#C8DEFF;--muted:#2A4060;--white:#E8F4FF;
+  --bg:#030508;--bg2:#060A10;--panel:#0C1420;
+  --border:rgba(0,212,255,.1);--border2:rgba(0,212,255,.22);
+  --cyan:#00D4FF;--cyan2:#0090CC;--gold:#FFB800;--gold2:#FF8C00;
+  --green:#00FF88;--red:#FF2D55;--purple:#BF5FFF;
+  --text:#8BAFD4;--white:#E0F2FF;--muted:#1A2840;
+  --f1:'Rajdhani',sans-serif;--f2:'Orbitron',monospace;--f3:'Share Tech Mono',monospace;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'Space Grotesk',sans-serif;color:var(--text)}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:var(--f1);color:var(--text)}
+body::before{content:'';position:fixed;inset:0;z-index:9998;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.025) 2px,rgba(0,0,0,.025) 4px)}
+#cv{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* ══════════ PARTICLES CANVAS ══════════ */
-#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
-
-/* ══════════ LOADING / SPLASH ══════════ */
-#splash{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.splash-ring{position:relative;width:120px;height:120px;margin-bottom:20px}
-.splash-ring svg{position:absolute;inset:0;animation:spin 2s linear infinite}
-.splash-ring svg.r2{animation-duration:3s;animation-direction:reverse;opacity:.5}
+/* ═══ SPLASH ═══ */
+#splash{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.sr-wrap{position:relative;width:128px;height:128px;margin-bottom:18px}
+.sr{position:absolute;inset:0;border-radius:50%;border:2px solid transparent}
+.sr1{border-top-color:var(--cyan);border-right-color:var(--cyan);animation:spin 1.2s linear infinite}
+.sr2{inset:14px;border-bottom-color:var(--gold);border-left-color:var(--gold);animation:spin 2s linear infinite reverse}
+.sr3{inset:28px;border-top-color:rgba(0,212,255,.3);animation:spin 3s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.splash-ico{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:44px;animation:bounce 1.5s ease-in-out infinite}
-@keyframes bounce{0%,100%{transform:translateY(0) rotate(-10deg)}50%{transform:translateY(-8px) rotate(10deg)}}
-.splash-title{font-family:'Bebas Neue';font-size:32px;letter-spacing:4px;color:var(--white);text-align:center}
-.splash-title span{color:var(--gold)}
-.splash-sub{font-family:'Syne Mono';font-size:11px;color:var(--muted);letter-spacing:3px;margin-top:6px;text-align:center}
-.splash-bar{width:220px;height:3px;background:rgba(255,255,255,.06);border-radius:10px;margin-top:24px;overflow:hidden}
-.splash-fill{height:100%;width:0;background:linear-gradient(90deg,var(--ton),var(--green),var(--gold));border-radius:10px;transition:width .4s ease;box-shadow:0 0 10px var(--ton)}
-.splash-wow{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s;pointer-events:none}
-.splash-wow.show{opacity:1}
-.wow-coins{font-family:'Bebas Neue';font-size:56px;color:var(--gold);text-shadow:0 0 40px rgba(255,215,0,.8);letter-spacing:2px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
-@keyframes popIn{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.wow-text{font-family:'Syne Mono';font-size:12px;color:var(--green);letter-spacing:2px;margin-top:6px}
-.wow-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.sr-core{position:absolute;inset:36px;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.12),var(--bg));border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:24px}
+.sr-ico{animation:pickH 1.5s ease-in-out infinite}
+@keyframes pickH{0%,100%{transform:rotate(-18deg)}45%{transform:rotate(18deg)}50%{transform:rotate(18deg) scale(.92)}55%{transform:rotate(18deg) scale(1.06)}}
+.sp-title{font-family:var(--f2);font-size:21px;color:var(--white);letter-spacing:3px;text-align:center}
+.sp-title b{color:var(--gold)}
+.sp-sub{font-family:var(--f3);font-size:10px;color:var(--muted);letter-spacing:3px;margin:6px 0 20px;animation:dots 1.4s steps(4,end) infinite}
+@keyframes dots{0%{content:'ACTIVANDO.'}25%{content:'ACTIVANDO..'}50%{content:'ACTIVANDO...'}75%{content:'ACTIVANDO'}}
+.sp-bar{width:200px;height:2px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;margin-bottom:24px}
+.sp-fill{height:100%;width:0;background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--gold));border-radius:2px;box-shadow:0 0 10px var(--cyan)}
 
-/* ══════════ APP SHELL ══════════ */
+.sp-wow{position:absolute;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.sp-wow.on{display:flex}
+.wow-ring{width:120px;height:120px;border-radius:50%;border:3px solid var(--gold);box-shadow:0 0 40px rgba(255,184,0,.5),inset 0 0 40px rgba(255,184,0,.1);display:flex;align-items:center;justify-content:center;font-size:44px;margin-bottom:16px;animation:wowRing .6s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes wowRing{from{transform:scale(0) rotate(-20deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+.wow-num{font-family:var(--f2);font-size:56px;color:var(--gold);text-shadow:0 0 40px rgba(255,184,0,.8);animation:wowNum .5s .2s cubic-bezier(.175,.885,.32,1.275) both}
+@keyframes wowNum{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.wow-lbl{font-family:var(--f3);font-size:11px;color:var(--cyan);letter-spacing:3px;margin-top:6px;animation:fadeIn .5s .4s both ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.wow-sub{font-size:12px;color:var(--muted);margin-top:4px;animation:fadeIn .5s .5s both ease}
+#wowPart{position:absolute;inset:0;pointer-events:none}
+
+/* ═══ APP ═══ */
 #app{height:100%;display:none;flex-direction:column;position:relative;z-index:1}
 .content{flex:1;overflow-y:auto;scrollbar-width:none}
 .content::-webkit-scrollbar{display:none}
-.sv{display:none;flex-direction:column;padding:14px;animation:fi .25s ease}
+.sv{display:none;flex-direction:column;padding:12px 14px 6px;animation:svIn .2s ease}
 .sv.on{display:flex}
-@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes svIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
-/* ══════════ TICKER ══════════ */
-.ticker{background:rgba(0,0,0,.7);border-bottom:1px solid rgba(255,215,0,.1);padding:5px 0;overflow:hidden;flex-shrink:0;position:relative}
-.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:28px;z-index:2}
+/* ═══ TICKER ═══ */
+.ticker{background:linear-gradient(90deg,rgba(0,212,255,.03),rgba(255,184,0,.03));border-bottom:1px solid var(--border);padding:5px 0;overflow:hidden;flex-shrink:0;position:relative}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:30px;z-index:2}
 .ticker::before{left:0;background:linear-gradient(90deg,var(--bg),transparent)}
 .ticker::after{right:0;background:linear-gradient(-90deg,var(--bg),transparent)}
-.tk-track{display:flex;animation:tk 32s linear infinite;white-space:nowrap}
-@keyframes tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:5px;padding:0 18px;font-size:10px;font-family:'Syne Mono'}
-.ti-g{color:var(--green)}.ti-b{color:var(--ton)}.ti-y{color:var(--gold)}
+.tk-track{display:flex;animation:tkAnim 30s linear infinite;white-space:nowrap}
+@keyframes tkAnim{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk{display:inline-flex;align-items:center;gap:5px;padding:0 20px;font-family:var(--f3);font-size:10px}
+.tkg{color:var(--green)}.tkc{color:var(--cyan)}.tky{color:var(--gold)}
 
-/* ══════════ BOTTOM NAV ══════════ */
-.bnav{background:rgba(6,9,15,.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:6px 0 max(10px,env(safe-area-inset-bottom));display:flex;justify-content:space-around;flex-shrink:0}
-.ni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;border-radius:10px;cursor:pointer;transition:all .15s;position:relative}
-.ni.on{background:rgba(0,152,234,.1)}
-.ni-ico{font-size:19px}
-.ni-lbl{font-family:'Syne Mono';font-size:7px;color:var(--muted);letter-spacing:.5px}
-.ni.on .ni-lbl{color:var(--ton)}
-.ni-dot{position:absolute;top:3px;right:5px;width:7px;height:7px;background:var(--red);border-radius:50%;display:none;box-shadow:0 0 6px var(--red)}
-.ni-dot.show{display:block}
+/* ═══ BOTTOM NAV ═══ */
+.bnav{background:rgba(3,5,8,.98);backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:5px 0 max(8px,env(safe-area-inset-bottom));display:flex;justify-content:space-around;flex-shrink:0}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 7px;border-radius:8px;cursor:pointer;transition:all .15s;position:relative}
+.ni.on{background:rgba(0,212,255,.06)}
+.ni-ico{font-size:18px;line-height:1}
+.ni-lbl{font-family:var(--f3);font-size:7px;color:var(--muted);letter-spacing:.5px}
+.ni.on .ni-ico{filter:drop-shadow(0 0 5px var(--cyan))}
+.ni.on .ni-lbl{color:var(--cyan)}
+.ni-dot{position:absolute;top:2px;right:3px;width:7px;height:7px;background:var(--red);border-radius:50%;display:none;box-shadow:0 0 6px var(--red)}
+.ni-dot.on{display:block}
 
-/* ══════════ TOAST ══════════ */
-.toast{position:fixed;bottom:75px;left:12px;right:12px;background:linear-gradient(135deg,#031508,#030A14);border:1px solid var(--green);border-radius:12px;padding:10px 14px;display:none;align-items:center;gap:8px;z-index:500;font-size:12px;color:var(--green);box-shadow:0 4px 24px rgba(0,230,118,.25);animation:slideUp .25s ease}
-@keyframes slideUp{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:72px;left:12px;right:12px;z-index:600;background:linear-gradient(135deg,rgba(0,16,24,.97),rgba(0,10,20,.99));border:1px solid var(--cyan2);border-radius:10px;padding:9px 14px;display:none;align-items:center;gap:9px;font-family:var(--f1);font-size:13px;color:var(--green);box-shadow:0 0 20px rgba(0,212,255,.12);animation:toastIn .2s ease}
+@keyframes toastIn{from{transform:translateY(8px);opacity:0}to{transform:translateY(0);opacity:1}}
 
-/* ══════════ FLOATING COINS ══════════ */
-.float-coin{position:fixed;pointer-events:none;z-index:600;font-family:'Bebas Neue';font-size:20px;color:var(--gold);text-shadow:0 0 10px rgba(255,215,0,.8);animation:floatUp .9s ease forwards}
-@keyframes floatUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-70px) scale(1.3)}}
+/* ═══ FLOATING COINS ═══ */
+.fc{position:fixed;z-index:700;pointer-events:none;font-family:var(--f2);font-size:18px;color:var(--gold);text-shadow:0 0 14px rgba(255,184,0,.9);animation:fcUp 1s ease forwards}
+@keyframes fcUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-90px) scale(1.5)}}
 
-/* ══════════ SEC LABELS ══════════ */
-.sec-lbl{font-family:'Syne Mono';font-size:9px;color:var(--ton);letter-spacing:2px;margin-bottom:3px}
-.sec-h{font-family:'Bebas Neue';font-size:22px;color:var(--white);letter-spacing:1px;margin-bottom:12px}
+/* ═══ PAGE HEADER ═══ */
+.ph{margin-bottom:12px}
+.ph-lbl{font-family:var(--f3);font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:2px}
+.ph-title{font-family:var(--f2);font-size:17px;color:var(--white);letter-spacing:.5px}
 
-/* ════════════════════════════════════
+/* ══════════════════════
    HOME
-════════════════════════════════════ */
-.hero{display:flex;flex-direction:column;align-items:center;padding:8px 0 6px;position:relative}
+══════════════════════ */
+.rig-zone{display:flex;flex-direction:column;align-items:center;padding:4px 0 10px;position:relative}
+.rig-outer{position:relative;width:94px;height:94px;margin-bottom:8px;cursor:pointer}
+.rig-ra{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,212,255,.14);animation:spin 8s linear infinite}
+.rig-ra::before{content:'';position:absolute;top:-3px;left:50%;transform:translateX(-50%);width:6px;height:6px;background:var(--cyan);border-radius:50%;box-shadow:0 0 10px var(--cyan),0 0 20px var(--cyan)}
+.rig-rb{position:absolute;inset:11px;border-radius:50%;border:1.5px solid rgba(255,184,0,.16);animation:spin 5s linear infinite reverse}
+.rig-rb::before{content:'';position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:4px;height:4px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold)}
+.rig-glow{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.07),transparent 62%);animation:glowPulse 2.5s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.12);opacity:1}}
+.rig-flash{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,rgba(0,212,255,.3),transparent 55%);opacity:0;animation:rigFlash 2s ease-in-out infinite}
+@keyframes rigFlash{0%,36%,42%,100%{opacity:0}39%{opacity:1}}
+.rig-body{position:absolute;inset:19px;border-radius:50%;background:radial-gradient(circle at 38% 32%,#0A2535,#040C18);border:1.5px solid rgba(0,212,255,.28);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 14px rgba(0,0,0,.5)}
+.rig-ico{font-size:25px;animation:pickA 2s ease-in-out infinite;filter:drop-shadow(0 0 7px rgba(0,212,255,.55))}
+@keyframes pickA{0%,100%{transform:rotate(-14deg) scale(1)}40%{transform:rotate(14deg) scale(1.06)}50%{transform:rotate(14deg) scale(.93)}60%{transform:rotate(14deg) scale(1)}}
+.rig-name{font-family:var(--f2);font-size:14px;color:var(--white);letter-spacing:1.5px;text-align:center}
+.rig-name span{color:var(--gold)}
+.rig-live{font-family:var(--f3);font-size:9px;color:var(--green);display:flex;align-items:center;gap:5px;margin-top:3px}
+.rdot{width:5px;height:5px;background:var(--green);border-radius:50%;box-shadow:0 0 5px var(--green);animation:blink 1.2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
 
-/* ANIMATED MINING RIG */
-.mine-rig-wrap{position:relative;width:100px;height:100px;margin-bottom:8px}
-.rig-ring-outer{position:absolute;inset:0;border-radius:50%;border:2px solid rgba(0,152,234,.15);animation:rigSpin 8s linear infinite}
-.rig-ring-outer::before{content:'';position:absolute;top:-2px;left:50%;width:6px;height:6px;background:var(--ton);border-radius:50%;box-shadow:0 0 10px var(--ton);transform:translateX(-50%)}
-.rig-ring-inner{position:absolute;inset:10px;border-radius:50%;border:1.5px solid rgba(0,152,234,.25);animation:rigSpin 5s linear infinite reverse}
-.rig-ring-inner::before{content:'';position:absolute;top:-1px;left:50%;width:4px;height:4px;background:var(--gold);border-radius:50%;box-shadow:0 0 8px var(--gold);transform:translateX(-50%)}
-@keyframes rigSpin{to{transform:rotate(360deg)}}
-.rig-core{position:absolute;inset:18px;border-radius:50%;background:radial-gradient(circle,#0A2035,#041020);border:1.5px solid rgba(0,152,234,.35);display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 0 20px rgba(0,152,234,.2),inset 0 0 15px rgba(0,152,234,.05)}
-.rig-core-ico{animation:pickSwing 2s ease-in-out infinite}
-@keyframes pickSwing{0%,100%{transform:rotate(-12deg) scale(1)}40%{transform:rotate(12deg) scale(1.1)}50%{transform:rotate(12deg) scale(.9)}60%{transform:rotate(12deg) scale(1)}}
-.rig-glow{position:absolute;inset:-5px;border-radius:50%;background:radial-gradient(circle,rgba(0,152,234,.08),transparent 70%);animation:glowPulse 2s ease-in-out infinite}
-@keyframes glowPulse{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
-
-/* Mining particles */
-.mine-particle{position:absolute;width:3px;height:3px;border-radius:50%;pointer-events:none}
-
-.hero-title{font-family:'Bebas Neue';font-size:19px;color:var(--white);letter-spacing:1px;text-align:center}
-.hero-title span{color:var(--gold)}
-.hero-mining{font-family:'Syne Mono';font-size:9px;color:var(--green);letter-spacing:2px;display:flex;align-items:center;gap:5px;margin-top:2px}
-.mining-dot{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
-
-/* BALANCE CARD */
-.bal-card{background:linear-gradient(135deg,rgba(12,18,32,.95),rgba(16,24,40,.95));border:1px solid var(--border);border-radius:20px;padding:14px 16px;margin:10px 0;position:relative;overflow:hidden}
-.bal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--ton),var(--gold),var(--ton),transparent)}
-.bal-card::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0,rgba(0,152,234,.04),transparent 60%);pointer-events:none}
-.bal-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.bal-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px}
-.bal-live{font-size:9px;color:var(--green);display:flex;align-items:center;gap:4px;background:rgba(0,230,118,.08);border:1px solid rgba(0,230,118,.2);padding:2px 8px;border-radius:20px}
-.bal-amount{font-family:'Bebas Neue';font-size:46px;color:var(--gold);text-shadow:0 0 30px rgba(255,215,0,.5);line-height:1;letter-spacing:2px;transition:color .2s}
-.bal-amount.flash{color:#fff;text-shadow:0 0 40px rgba(255,255,255,.8)}
-.bal-sub{font-size:11px;color:var(--muted);margin-top:2px}
-.bal-sub b{color:var(--green)}
-.prog-wrap{margin-top:10px}
-.prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px}
-.prog-pct{color:var(--ton);font-family:'Syne Mono';font-weight:bold}
-.prog-track{height:7px;background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden;position:relative}
-.prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--ton2),var(--ton),var(--green));box-shadow:0 0 10px var(--ton);transition:width 1.2s cubic-bezier(.4,0,.2,1);position:relative}
-.prog-fill::after{content:'';position:absolute;right:0;top:0;bottom:0;width:20px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5));animation:shim 1.5s infinite}
+/* BAL */
+.bal{background:linear-gradient(135deg,rgba(10,18,30,.98),rgba(8,14,24,.98));border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:10px;position:relative;overflow:hidden}
+.bal::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--cyan),transparent)}
+.bal::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -10%,rgba(0,212,255,.04),transparent 55%);pointer-events:none}
+.bal-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.bal-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px}
+.bal-live-tag{font-family:var(--f3);font-size:9px;color:var(--green);display:flex;align-items:center;gap:4px;background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15);padding:2px 8px;border-radius:20px}
+.bal-amt{font-family:var(--f2);font-size:40px;color:var(--gold);text-shadow:0 0 24px rgba(255,184,0,.5);line-height:1;letter-spacing:.5px;transition:color .15s}
+.bal-amt.flash{color:#fff;text-shadow:0 0 40px rgba(255,255,255,.9)}
+.bal-eur{font-family:var(--f3);font-size:11px;color:var(--muted);margin-top:2px}
+.bal-eur b{color:var(--green)}
+.prog{margin-top:10px}
+.prog-row{display:flex;justify-content:space-between;font-family:var(--f3);font-size:9px;margin-bottom:4px}
+.prog-lbl{color:var(--muted)}.prog-pct{color:var(--cyan);font-weight:bold}
+.prog-track{height:6px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.prog-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--green));box-shadow:0 0 10px var(--cyan2);transition:width 1.5s cubic-bezier(.4,0,.2,1);position:relative}
+.prog-bar::after{content:'';position:absolute;right:0;top:0;bottom:0;width:18px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.4));animation:shim 2s infinite}
 @keyframes shim{0%,100%{opacity:0}50%{opacity:1}}
-.prog-msg{font-family:'Syne Mono';font-size:9px;color:var(--gold);text-align:right;margin-top:4px;letter-spacing:1px}
+.prog-msg{font-family:var(--f3);font-size:9px;color:var(--gold);text-align:right;margin-top:4px;letter-spacing:.5px}
 
 /* STATS */
-.stats3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
-.sc{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:10px 6px;text-align:center;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
-.sc:active{transform:scale(.96)}
-.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2.5px}
-.sc.c1::after{background:linear-gradient(90deg,var(--red),var(--gold))}
-.sc.c2::after{background:linear-gradient(90deg,var(--gold),var(--gold2))}
-.sc.c3::after{background:linear-gradient(90deg,var(--green),var(--ton))}
-.sc-ico{font-size:17px;margin-bottom:2px}
-.sc.c1 .sc-ico{animation:fireAnim 1.5s ease-in-out infinite}
-@keyframes fireAnim{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.15) translateY(-2px)}}
-.sc-val{font-family:'Bebas Neue';font-size:17px;color:var(--white);letter-spacing:1px}
-.sc-lbl{font-family:'Syne Mono';font-size:8px;color:var(--muted);letter-spacing:.5px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:10px}
+.st{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 5px;text-align:center;position:relative;overflow:hidden;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.st:active{transform:scale(.94)}
+.st::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.st.s1::after{background:linear-gradient(90deg,var(--red),var(--gold))}
+.st.s2::after{background:linear-gradient(90deg,var(--gold),var(--gold2))}
+.st.s3::after{background:linear-gradient(90deg,var(--green),var(--cyan))}
+.st-ico{font-size:15px;margin-bottom:2px}
+.st.s1 .st-ico{animation:firePulse 1.8s ease-in-out infinite}
+@keyframes firePulse{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1.2) translateY(-2px);filter:drop-shadow(0 0 6px rgba(255,100,0,.7))}}
+.st-val{font-family:var(--f2);font-size:15px;color:var(--white);letter-spacing:.5px}
+.st-lbl{font-family:var(--f3);font-size:7px;color:var(--muted);letter-spacing:.5px;margin-top:1px}
 
-/* GPU CARD */
-.gpu-card{background:linear-gradient(135deg,#061410,#060A14);border:1px solid rgba(0,152,234,.2);border-radius:16px;padding:11px 13px;display:flex;align-items:center;gap:11px;margin-bottom:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
-.gpu-card:active{transform:scale(.98)}
-.gpu-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--ton),var(--green));border-radius:2px 0 0 2px}
-.gpu-ico-wrap{width:48px;height:48px;background:linear-gradient(135deg,#0A2020,#0A1830);border:1.5px solid rgba(0,152,234,.25);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;position:relative;flex-shrink:0}
-.gpu-active-dot{position:absolute;top:3px;right:3px;width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
-.gpu-fan{position:absolute;font-size:10px;opacity:.5;animation:fanSpin 1s linear infinite}
-@keyframes fanSpin{to{transform:rotate(360deg)}}
+/* GPU */
+.gpu{background:linear-gradient(135deg,rgba(4,14,10,.96),rgba(6,10,20,.96));border:1px solid var(--border2);border-radius:14px;padding:11px 12px;display:flex;align-items:center;gap:9px;margin-bottom:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
+.gpu:active{transform:scale(.97)}
+.gpu::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--cyan),var(--green))}
+.gpu-ic{width:44px;height:44px;background:linear-gradient(135deg,#0A2020,#081820);border:1px solid rgba(0,212,255,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;position:relative;flex-shrink:0}
+.gpu-dot{position:absolute;top:3px;right:3px;width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
 .gpu-info{flex:1}
-.gpu-name{font-family:'Syne Mono';font-size:10px;color:var(--ton);margin-bottom:2px;letter-spacing:1px}
-.gpu-cps{font-size:11px;color:var(--muted)}
-.gpu-prod{font-family:'Syne Mono';font-size:10px;color:var(--green);margin-top:4px;display:flex;align-items:center;gap:5px}
-.gpu-prod-val{animation:countUp .5s ease}
-@keyframes countUp{from{transform:translateY(4px);opacity:0}to{transform:translateY(0);opacity:1}}
-.gpu-arr{color:var(--muted);font-size:18px}
+.gpu-name{font-family:var(--f3);font-size:10px;color:var(--cyan);letter-spacing:1px;margin-bottom:2px}
+.gpu-cps{font-size:10px;color:var(--muted)}
+.gpu-live{display:flex;align-items:center;gap:4px;margin-top:4px;font-family:var(--f3);font-size:9px;color:var(--green)}
+.gpu-arr{font-size:15px;color:var(--muted)}
 
-/* FLOATING PROD */
-.prod-float{position:absolute;font-family:'Syne Mono';font-size:9px;color:var(--green);pointer-events:none;animation:prodFloat 1.5s ease forwards;right:50px;top:10px}
-@keyframes prodFloat{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-25px)}}
+/* Float prod */
+.gf{position:absolute;right:48px;top:7px;font-family:var(--f3);font-size:10px;color:var(--green);pointer-events:none;opacity:0;animation:gfUp 1.5s ease forwards}
+@keyframes gfUp{0%{opacity:0;transform:translateY(0)}20%{opacity:1}80%{opacity:1;transform:translateY(-20px)}100%{opacity:0;transform:translateY(-26px)}}
 
-/* ACTION BUTTONS */
-.abtn{border-radius:16px;padding:13px 16px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:all .15s;margin-bottom:8px;position:relative;overflow:hidden}
+/* Action btns */
+.abtn{border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .15s;margin-bottom:8px;position:relative;overflow:hidden;border:1px solid;-webkit-tap-highlight-color:transparent}
 .abtn:active{transform:scale(.97)}
-.abtn-ton{background:linear-gradient(135deg,#031828,#041030);border:1px solid var(--ton)}
-.abtn-ton::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent,rgba(0,152,234,.05));pointer-events:none}
-.abtn-gold{background:linear-gradient(135deg,#180F00,#241500);border:1px solid var(--gold2)}
-.abtn-ton .abtn-tag{animation:tagPulse 2.5s ease-in-out infinite}
-@keyframes tagPulse{0%,100%{box-shadow:0 0 6px rgba(0,152,234,.3)}50%{box-shadow:0 0 16px rgba(0,152,234,.7)}}
-.abtn-ico{font-size:22px;flex-shrink:0}
+.abtn-ads{background:linear-gradient(135deg,rgba(0,38,58,.85),rgba(0,18,36,.92));border-color:var(--cyan2)}
+.abtn-ads::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,212,255,.04),transparent);animation:scanAnim 3s linear infinite}
+@keyframes scanAnim{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.abtn-boost{background:linear-gradient(135deg,rgba(40,14,0,.85),rgba(28,8,0,.92));border-color:var(--gold2)}
+.abtn-ico{font-size:21px;flex-shrink:0}
+.abtn-ads .abtn-ico{animation:adIco 2.2s ease-in-out infinite}
+@keyframes adIco{0%,100%{filter:drop-shadow(0 0 4px rgba(0,212,255,.3))}50%{filter:drop-shadow(0 0 12px rgba(0,212,255,.9))}}
+.abtn-boost .abtn-ico{animation:rocketAnim 2.5s ease-in-out infinite}
+@keyframes rocketAnim{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-3px) rotate(-8deg)}60%{transform:translateY(-5px) rotate(8deg)}}
 .abtn-body{flex:1}
 .abtn-title{font-size:13px;font-weight:700;color:var(--white)}
 .abtn-desc{font-size:10px;color:var(--muted);margin-top:1px}
-.abtn-tag{font-family:'Syne Mono';font-size:12px;padding:4px 10px;border-radius:20px;flex-shrink:0}
-.tag-ton{color:var(--ton);background:rgba(0,152,234,.12);border:1px solid rgba(0,152,234,.3)}
-.tag-gold{color:var(--gold);background:rgba(255,215,0,.12);border:1px solid rgba(255,215,0,.3);animation:boostGlow 2s ease-in-out infinite}
-@keyframes boostGlow{0%,100%{box-shadow:0 0 8px rgba(255,165,0,.3)}50%{box-shadow:0 0 18px rgba(255,165,0,.7)}}
-.rocket-ico{animation:rocketShake 3s ease-in-out infinite}
-@keyframes rocketShake{0%,100%{transform:rotate(0) translateY(0)}25%{transform:rotate(-8deg) translateY(-2px)}75%{transform:rotate(8deg) translateY(-2px)}}
+.abtn-tag{font-family:var(--f3);font-size:11px;padding:3px 9px;border-radius:20px;flex-shrink:0;letter-spacing:.5px}
+.tag-c{color:var(--cyan);background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.25);animation:tagC 2.5s ease-in-out infinite}
+@keyframes tagC{0%,100%{box-shadow:0 0 6px rgba(0,212,255,.2)}50%{box-shadow:0 0 16px rgba(0,212,255,.6)}}
+.tag-g{color:var(--gold);background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.25);animation:tagG 2s ease-in-out infinite}
+@keyframes tagG{0%,100%{box-shadow:0 0 6px rgba(255,184,0,.2)}50%{box-shadow:0 0 18px rgba(255,184,0,.6)}}
 
-/* ════════════════════════════════════
+/* ══════════════════════
+   DAILY CHECK-IN
+══════════════════════ */
+.daily-hero{background:linear-gradient(135deg,rgba(8,5,20,.98),rgba(12,5,25,.98));border:1px solid rgba(191,95,255,.3);border-radius:16px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.daily-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.dh-badge{position:absolute;top:10px;right:10px;background:rgba(191,95,255,.15);border:1px solid rgba(191,95,255,.35);border-radius:20px;padding:2px 8px;font-family:var(--f3);font-size:8px;color:var(--purple);letter-spacing:1px}
+.dh-streak{font-family:var(--f2);font-size:36px;color:var(--gold);text-shadow:0 0 20px rgba(255,184,0,.5);margin-bottom:2px}
+.dh-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
+.dh-days{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
+.dd{border-radius:8px;padding:6px 2px;text-align:center;border:1px solid var(--border)}
+.dd.done{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.3)}
+.dd.today{background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.4);box-shadow:0 0 10px rgba(255,184,0,.2)}
+.dd.future{opacity:.3}
+.dd-n{font-family:var(--f3);font-size:7px;color:var(--muted);margin-bottom:2px}
+.dd-r{font-family:var(--f3);font-size:9px}
+.dd.done .dd-r{color:var(--green)}.dd.today .dd-r{color:var(--gold)}.dd.future .dd-r{color:var(--muted)}
+.dh-claim{background:linear-gradient(135deg,rgba(191,95,255,.12),rgba(100,40,200,.08));border:1.5px solid rgba(191,95,255,.4);border-radius:12px;padding:12px;text-align:center;cursor:pointer;transition:all .2s;animation:claimPulse 1.5s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+@keyframes claimPulse{0%,100%{box-shadow:0 0 10px rgba(191,95,255,.2)}50%{box-shadow:0 0 22px rgba(191,95,255,.5)}}
+.dh-claim.done{animation:none;opacity:.5;pointer-events:none;border-color:var(--muted)}
+.dh-claim-t{font-family:var(--f2);font-size:13px;color:var(--purple);letter-spacing:2px}
+.dh-claim.done .dh-claim-t{color:var(--muted)}
+.dh-claim-s{font-family:var(--f3);font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:.5px}
+.dh-next{font-family:var(--f3);font-size:10px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.5px}
+.dh-next span{color:var(--cyan)}
+
+/* ══════════════════════
    ADS SCREEN
-════════════════════════════════════ */
-.ad-screen-wrap{position:relative}
+══════════════════════ */
+.ad-card{background:linear-gradient(135deg,rgba(7,4,15,.98),rgba(10,6,20,.98));border:1px solid rgba(100,50,200,.3);border-radius:18px;overflow:hidden;margin-bottom:10px}
+.ad-vid{height:155px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.ad-vid::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(100,50,200,.15),transparent 55%),radial-gradient(ellipse at 70% 50%,rgba(0,212,255,.08),transparent 55%)}
+.ad-lines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.008) 3px,rgba(255,255,255,.008) 4px);pointer-events:none}
 
-/* VIDEO CARD */
-.ad-card{background:linear-gradient(135deg,#08060F,#0C0818);border:1px solid rgba(124,77,255,.25);border-radius:20px;overflow:hidden;margin-bottom:10px;position:relative}
-.ad-vid-area{height:150px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.ad-vid-area::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(124,77,255,.15),transparent 60%),radial-gradient(ellipse at 70% 50%,rgba(0,152,234,.1),transparent 60%)}
-.ad-vid-lines{position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,.01) 2px,rgba(255,255,255,.01) 4px);pointer-events:none}
+/* ⭐ COUNTDOWN INSIDE AD - main feature */
+.ad-cd{
+  position:absolute;top:10px;right:12px;z-index:20;
+  display:none;align-items:center;gap:5px;
+  background:rgba(0,0,0,.82);border:1px solid rgba(255,255,255,.18);
+  border-radius:22px;padding:5px 12px;backdrop-filter:blur(4px);
+}
+.ad-cd.show{display:flex}
+.ad-cd-ring{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.18);border-top-color:var(--cyan);animation:spin .8s linear infinite;flex-shrink:0}
+.ad-cd-num{font-family:var(--f2);font-size:17px;font-weight:900;color:var(--white);min-width:26px;text-align:center;line-height:1}
+.ad-cd-s{font-family:var(--f3);font-size:9px;color:rgba(255,255,255,.4)}
 
-/* Countdown overlay inside video */
-.ad-countdown-overlay{position:absolute;top:10px;right:12px;z-index:10;background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:4px 12px;display:none;align-items:center;gap:5px}
-.aco-ico{font-size:11px}
-.aco-time{font-family:'Syne Mono';font-size:13px;font-weight:bold;color:var(--white);min-width:28px;text-align:center}
+/* X button appears when countdown = 0 */
+.ad-x-btn{
+  position:absolute;top:10px;right:12px;z-index:20;
+  display:none;align-items:center;gap:5px;
+  background:rgba(255,45,85,.85);border:1px solid rgba(255,100,120,.3);
+  border-radius:22px;padding:5px 12px;cursor:pointer;backdrop-filter:blur(4px);
+  animation:xAppear .3s cubic-bezier(.175,.885,.32,1.275);
+}
+@keyframes xAppear{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.ad-x-btn.show{display:flex}
+.ad-x-btn:active{transform:scale(.92)}
+.ad-x-ico{font-family:var(--f2);font-size:13px;color:var(--white);font-weight:900}
+.ad-x-lbl{font-family:var(--f3);font-size:9px;color:rgba(255,255,255,.8);letter-spacing:.5px}
 
-/* Play button */
-.ad-play-btn{width:58px;height:58px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;color:var(--white);transition:all .2s;position:relative;z-index:5;animation:playPulse 2.5s ease-in-out infinite}
-@keyframes playPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.2)}50%{box-shadow:0 0 0 12px rgba(255,255,255,0)}}
-.ad-play-btn:active{transform:scale(.92)}
-.ad-play-btn.loading{animation:spin 1s linear infinite;font-size:18px}
+.ad-play{width:58px;height:58px;border-radius:50%;background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.22);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;color:var(--white);transition:all .2s;position:relative;z-index:5;animation:playPulse 2s ease-in-out infinite;-webkit-tap-highlight-color:transparent}
+@keyframes playPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,.1)}50%{box-shadow:0 0 0 14px rgba(255,255,255,0)}}
+.ad-play:active{transform:scale(.9)}
+.ad-play.busy{animation:spin .8s linear infinite;font-size:18px;cursor:wait;border-color:var(--cyan)}
+.ad-rbar{padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(255,255,255,.04)}
+.ar-txt{font-size:11px;color:var(--text)}
+.ar-val{font-family:var(--f2);font-size:17px;color:var(--gold);text-shadow:0 0 12px rgba(255,184,0,.5)}
 
-.ad-rbar{padding:11px 15px;display:flex;justify-content:space-between;align-items:center}
-.ad-rtxt{font-size:11px;color:var(--text)}
-.ad-ramt{font-family:'Bebas Neue';font-size:19px;color:var(--gold);text-shadow:0 0 12px rgba(255,215,0,.5);letter-spacing:1px}
+/* Claim btn */
+.claim{border:1.5px solid;border-radius:14px;padding:14px;text-align:center;cursor:pointer;margin-bottom:10px;transition:all .2s;position:relative;overflow:hidden}
+.claim.w{background:rgba(255,255,255,.02);border-color:var(--muted);opacity:.5;pointer-events:none}
+.claim.c{background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.3);pointer-events:none}
+.claim.r{background:linear-gradient(135deg,rgba(0,255,136,.07),rgba(0,212,255,.05));border-color:var(--green);animation:readyPulse 1s ease-in-out infinite}
+@keyframes readyPulse{0%,100%{box-shadow:0 0 10px rgba(0,255,136,.2)}50%{box-shadow:0 0 28px rgba(0,255,136,.55)}}
+.claim.r::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);animation:shine 2s infinite}
+@keyframes shine{to{left:100%}}
+.claim-t{font-family:var(--f2);font-size:13px;letter-spacing:2px}
+.claim.w .claim-t,.claim.c .claim-t{color:var(--muted)}
+.claim.r .claim-t{color:var(--green)}
+.claim-s{font-family:var(--f3);font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
 
-/* CLAIM BUTTON */
-.claim-btn{border-radius:16px;padding:15px;text-align:center;cursor:pointer;margin-bottom:10px;transition:all .2s;border:1.5px solid;position:relative;overflow:hidden}
-.claim-btn.waiting{background:rgba(255,255,255,.03);border-color:var(--muted);opacity:.5;pointer-events:none}
-.claim-btn.counting{background:rgba(0,152,234,.05);border-color:rgba(0,152,234,.4);opacity:.8;pointer-events:none}
-.claim-btn.ready{background:linear-gradient(135deg,rgba(0,230,118,.08),rgba(0,152,234,.08));border-color:var(--green);pointer-events:auto;animation:claimReady 1s ease-in-out infinite}
-@keyframes claimReady{0%,100%{box-shadow:0 0 15px rgba(0,230,118,.2)}50%{box-shadow:0 0 30px rgba(0,230,118,.5)}}
-.claim-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);transition:left .5s}
-.claim-btn.ready::before{animation:shine 2s infinite}
-@keyframes shine{0%{left:-100%}100%{left:100%}}
-.cb-t{font-family:'Bebas Neue';font-size:16px;letter-spacing:2px}
-.claim-btn.waiting .cb-t,.claim-btn.counting .cb-t{color:var(--muted)}
-.claim-btn.ready .cb-t{color:var(--green)}
-.cb-s{font-size:10px;color:var(--muted);margin-top:3px}
+/* Cooldown */
+.cd-box{background:linear-gradient(135deg,rgba(255,45,85,.05),rgba(255,45,85,.02));border:1px solid rgba(255,45,85,.2);border-radius:14px;padding:14px;text-align:center;display:none;margin-bottom:10px}
+.cd-lbl{font-family:var(--f3);font-size:9px;color:var(--red);letter-spacing:2px;margin-bottom:6px}
+.cd-time{font-family:var(--f2);font-size:36px;color:var(--white);letter-spacing:4px;text-shadow:0 0 18px rgba(255,45,85,.35)}
+.cd-sub{font-family:var(--f3);font-size:9px;color:var(--muted);margin-top:3px}
 
-/* COOLDOWN CARD */
-.cooldown-box{background:linear-gradient(135deg,rgba(255,61,87,.06),rgba(255,61,87,.02));border:1px solid rgba(255,61,87,.25);border-radius:14px;padding:14px;text-align:center;display:none;margin-bottom:10px}
-.cd-title{font-family:'Bebas Neue';font-size:16px;color:var(--red);letter-spacing:1px;margin-bottom:6px}
-.cd-timer{font-family:'Bebas Neue';font-size:40px;color:var(--white);letter-spacing:3px;text-shadow:0 0 20px rgba(255,61,87,.4)}
-.cd-sub{font-size:10px;color:var(--muted);margin-top:4px;font-family:'Syne Mono';letter-spacing:1px}
+/* Boost card */
+.boost-card{background:linear-gradient(135deg,rgba(18,8,0,.95),rgba(22,10,0,.98));border:1px solid rgba(255,140,0,.22);border-radius:14px;padding:11px 13px;display:flex;align-items:center;gap:10px;margin-bottom:10px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.boost-card:active{transform:scale(.97)}
+.bc-ico{font-size:24px;animation:rocketAnim 2.5s ease-in-out infinite}
+.bc-body{flex:1}.bc-title{font-size:12px;font-weight:700;color:var(--white)}.bc-desc{font-size:10px;color:var(--muted)}
+.bc-tag{font-family:var(--f3);font-size:11px;background:rgba(255,184,0,.1);border:1px solid rgba(255,184,0,.25);color:var(--gold);padding:3px 9px;border-radius:20px;animation:tagG 2s infinite}
 
-/* BOOST CARD */
-.boost-card{background:linear-gradient(135deg,#120900,#190F00);border:1px solid rgba(255,165,0,.25);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:11px;margin-bottom:10px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
-.boost-card:active{transform:scale(.98)}
-.boost-card::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,165,0,.03));pointer-events:none}
-.bc-ico{font-size:28px;animation:rocketShake 3s ease-in-out infinite}
-.bc-body{flex:1}
-.bc-title{font-size:13px;font-weight:700;color:var(--white)}
-.bc-desc{font-size:10px;color:var(--muted)}
-.bc-tag{background:rgba(255,165,0,.12);border:1px solid rgba(255,165,0,.3);color:var(--gold2);font-family:'Syne Mono';font-size:12px;padding:4px 10px;border-radius:20px;animation:boostGlow 2s infinite}
-
-/* AD PROGRESS */
-.ad-prog{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
-.ap-top{display:flex;justify-content:space-between;margin-bottom:7px}
+/* Dots */
+.ad-prog{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:11px 13px}
+.ap-row{display:flex;justify-content:space-between;margin-bottom:6px}
 .ap-lbl{font-size:11px;color:var(--muted)}
-.ap-cnt{font-family:'Syne Mono';font-size:12px;color:var(--ton);font-weight:bold}
+.ap-cnt{font-family:var(--f3);font-size:11px;color:var(--cyan);font-weight:bold}
 .ap-dots{display:flex;gap:3px;flex-wrap:wrap}
-.ap-dot{height:5px;flex:1;min-width:6px;max-width:14px;background:rgba(0,152,234,.08);border-radius:10px;transition:all .3s}
-.ap-dot.f{background:var(--ton);box-shadow:0 0 6px var(--ton)}
+.dot{height:5px;flex:1;min-width:5px;max-width:13px;background:rgba(0,212,255,.07);border-radius:3px;transition:all .3s}
+.dot.on{background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
 
-/* ════════════════════════════════════
-   MINE SCREEN
-════════════════════════════════════ */
-.rig-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:12px 14px;display:flex;align-items:center;gap:11px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
-.rig-card:active{transform:scale(.98)}
-.rig-card.current{background:linear-gradient(135deg,rgba(0,152,234,.05),rgba(0,152,234,.01));border-color:rgba(0,152,234,.3)}
-.rig-card.locked{opacity:.45}
-.rig-card.unlockable{border-color:var(--gold2);animation:unlockPulse 2s ease-in-out infinite}
-@keyframes unlockPulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 20px rgba(255,165,0,.2)}}
-.rig-ico-wrap{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:24px;position:relative;flex-shrink:0}
-.rig-card.current .rig-ico-wrap{background:linear-gradient(135deg,#0A2030,#0A1820);border:1.5px solid rgba(0,152,234,.3)}
-.rig-card:not(.current) .rig-ico-wrap{background:rgba(255,255,255,.04);border:1px solid var(--border)}
-.rig-status{position:absolute;top:3px;right:3px;width:8px;height:8px;border-radius:50%}
-.rig-card.current .rig-status{background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
-.rig-card.locked .rig-status{background:var(--muted)}
-.rig-info{flex:1}
-.rig-name{font-size:13px;font-weight:700;color:var(--white)}
-.rig-stat{font-size:10px;color:var(--muted);margin-top:1px}
-.rig-live{font-family:'Syne Mono';font-size:9px;color:var(--green);margin-top:3px;display:flex;align-items:center;gap:4px}
-.rig-badge{font-family:'Syne Mono';font-size:9px;padding:3px 8px;border-radius:20px;flex-shrink:0}
-.rb-cur{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.25)}
-.rb-cost{background:rgba(255,215,0,.08);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
-.rb-lock{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid rgba(255,255,255,.08)}
-.rb-buy{background:rgba(255,165,0,.15);color:var(--gold2);border:1px solid rgba(255,165,0,.35);animation:boostGlow 1.5s infinite}
+/* ══════════════════════
+   MINE
+══════════════════════ */
+.mine-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;margin-bottom:8px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.mine-card:active{transform:scale(.97)}
+.mine-card.cur{background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(0,212,255,.01));border-color:rgba(0,212,255,.3)}
+.mine-card.lck{opacity:.45}
+.mine-card.buy{border-color:var(--gold2);animation:tagG 2s infinite}
+.mine-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px}
+.mine-card.cur::before{background:linear-gradient(180deg,var(--cyan),var(--green))}
+.mine-card.lck::before{background:var(--muted)}
+.mine-card.buy::before{background:linear-gradient(180deg,var(--gold),var(--gold2))}
+.mc-ic{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;position:relative;flex-shrink:0;border:1px solid var(--border)}
+.mine-card.cur .mc-ic{background:linear-gradient(135deg,#0A2025,#0A1820);border-color:rgba(0,212,255,.25)}
+.mc-st{position:absolute;top:3px;right:3px;width:7px;height:7px;border-radius:50%}
+.mine-card.cur .mc-st{background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s infinite}
+.mine-card.lck .mc-st{background:var(--muted)}
+.mc-info{flex:1}.mc-name{font-size:13px;font-weight:700;color:var(--white)}.mc-stat{font-size:10px;color:var(--muted)}
+.mc-live{display:flex;align-items:center;gap:4px;margin-top:3px;font-family:var(--f3);font-size:9px;color:var(--green)}
+.mc-bdg{font-family:var(--f3);font-size:9px;padding:3px 8px;border-radius:20px;flex-shrink:0}
+.mb-a{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.25)}
+.mb-c{background:rgba(255,184,0,.08);color:var(--gold);border:1px solid rgba(255,184,0,.2)}
+.mb-l{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid rgba(255,255,255,.07)}
+.mb-b{background:rgba(255,140,0,.15);color:var(--gold2);border:1px solid rgba(255,140,0,.35);animation:tagG 1.5s infinite}
 
-/* ════════════════════════════════════
+/* ══════════════════════
    MISSIONS
-════════════════════════════════════ */
-.daily-mission{background:linear-gradient(135deg,#0A0A20,#14081A);border:1px solid rgba(168,85,247,.3);border-radius:16px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
-.dm-badge{position:absolute;top:10px;right:10px;background:rgba(168,85,247,.2);border:1px solid rgba(168,85,247,.4);border-radius:20px;padding:2px 8px;font-family:'Syne Mono';font-size:8px;color:var(--purple);letter-spacing:1px}
-.dm-title{font-family:'Bebas Neue';font-size:16px;color:var(--white);letter-spacing:1px;margin-bottom:3px}
-.dm-desc{font-size:11px;color:var(--muted)}
-.dm-reward{font-family:'Bebas Neue';font-size:24px;color:var(--gold);margin-top:8px;text-shadow:0 0 15px rgba(255,215,0,.4)}
+══════════════════════ */
+.ms-daily{background:linear-gradient(135deg,rgba(8,5,20,.98),rgba(12,5,26,.98));border:1px solid rgba(191,95,255,.28);border-radius:16px;padding:14px;margin-bottom:12px;position:relative;overflow:hidden}
+.ms-daily::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.msd-badge{position:absolute;top:10px;right:10px;background:rgba(191,95,255,.15);border:1px solid rgba(191,95,255,.35);border-radius:20px;padding:2px 8px;font-family:var(--f3);font-size:8px;color:var(--purple);letter-spacing:1px}
+.msd-title{font-family:var(--f2);font-size:14px;color:var(--white);letter-spacing:.5px;margin-bottom:2px}
+.msd-desc{font-size:11px;color:var(--muted)}
+.msd-rew{font-family:var(--f2);font-size:22px;color:var(--gold);margin-top:8px;text-shadow:0 0 14px rgba(255,184,0,.4)}
 
-.ms-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:12px 13px;display:flex;align-items:center;gap:10px;margin-bottom:7px;transition:all .2s}
-.ms-card.done{opacity:.5}
-.ms-card.claimable{border-color:var(--green);background:rgba(0,230,118,.04);animation:claimReady 1.5s infinite}
-.ms-ico-w{width:40px;height:40px;background:rgba(0,152,234,.06);border:1px solid rgba(0,152,234,.12);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.ms-info{flex:1}
+.ms{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:11px 12px;display:flex;align-items:center;gap:9px;margin-bottom:7px;transition:all .2s}
+.ms.done{opacity:.5}
+.ms-ic{width:38px;height:38px;background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.12);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.ms-body{flex:1}
 .ms-title{font-size:12px;font-weight:700;color:var(--white);margin-bottom:3px}
-.ms-bar{height:4px;background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden}
-.ms-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--ton),var(--green));transition:width .8s ease}
-.ms-sub{font-family:'Syne Mono';font-size:9px;color:var(--muted);margin-top:3px}
-.ms-tag{font-family:'Syne Mono';font-size:10px;color:var(--gold);background:rgba(255,215,0,.08);border:1px solid rgba(255,215,0,.18);padding:3px 8px;border-radius:20px;white-space:nowrap;flex-shrink:0}
-.ms-claim-btn{background:rgba(0,230,118,.1);border:1px solid rgba(0,230,118,.3);color:var(--green);font-family:'Syne Mono';font-size:9px;padding:4px 10px;border-radius:20px;cursor:pointer;letter-spacing:1px;flex-shrink:0}
+.ms-pbar{height:3px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.ms-pfill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--green));transition:width .8s ease}
+.ms-sub{font-family:var(--f3);font-size:8px;color:var(--muted);margin-top:3px;letter-spacing:.5px}
+.ms-tag{font-family:var(--f3);font-size:10px;color:var(--gold);background:rgba(255,184,0,.07);border:1px solid rgba(255,184,0,.18);padding:3px 7px;border-radius:20px;white-space:nowrap;flex-shrink:0}
 
-/* ════════════════════════════════════
-   RANKING
-════════════════════════════════════ */
-.season-banner{background:linear-gradient(135deg,#080A1A,#0C0818);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.sb-left .sb-lbl{font-family:'Syne Mono';font-size:9px;color:rgba(168,85,247,.8);letter-spacing:2px}
-.sb-left .sb-prizes{margin-top:5px;display:flex;flex-direction:column;gap:2px}
-.sb-prize{font-size:10px;color:var(--text)}
-.sb-time{font-family:'Bebas Neue';font-size:22px;color:var(--white);letter-spacing:2px}
-.sb-sub{font-family:'Syne Mono';font-size:9px;color:var(--muted);text-align:right;margin-top:2px}
+/* ══════════════════════
+   RANKING — PREMIUM
+══════════════════════ */
+.season{background:linear-gradient(135deg,rgba(6,4,18,.98),rgba(8,5,22,.98));border:1px solid rgba(191,95,255,.2);border-radius:16px;padding:13px 15px;display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;position:relative;overflow:hidden}
+.season::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--purple),transparent)}
+.sn-lbl{font-family:var(--f3);font-size:9px;color:rgba(191,95,255,.8);letter-spacing:2px;margin-bottom:6px}
+.sn-prizes{display:flex;flex-direction:column;gap:3px}
+.sn-prize{font-size:11px;color:var(--text)}
+.sn-time{font-family:var(--f2);font-size:24px;color:var(--white);letter-spacing:2px}
+.sn-sub{font-family:var(--f3);font-size:8px;color:var(--muted);text-align:right;margin-top:2px;letter-spacing:1px}
 
-.podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;margin-bottom:14px;padding:0 4px}
-.pod{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid;margin-bottom:3px}
-.pod1 .pod-av{width:46px;height:46px;border-color:var(--gold);box-shadow:0 0 16px rgba(255,215,0,.4);animation:podGlow 2s ease-in-out infinite}
-@keyframes podGlow{0%,100%{box-shadow:0 0 16px rgba(255,215,0,.3)}50%{box-shadow:0 0 28px rgba(255,215,0,.6)}}
-.pod2 .pod-av{width:38px;height:38px;border-color:#C0C0C0}
-.pod3 .pod-av{width:34px;height:34px;border-color:#CD7F32}
-.pod-name{font-size:9px;color:var(--text);font-weight:700;text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pod-coins{font-family:'Syne Mono';font-size:9px;color:var(--gold)}
-.pod-block{width:100%;border-radius:7px 7px 0 0;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue';font-size:18px;color:rgba(255,255,255,.06)}
-.pod1 .pod-block{height:54px;background:linear-gradient(180deg,#2A1A00,#1A1000);border:1px solid rgba(255,215,0,.15)}
-.pod2 .pod-block{height:38px;background:linear-gradient(180deg,#202020,#141414);border:1px solid rgba(200,200,200,.1)}
-.pod3 .pod-block{height:28px;background:linear-gradient(180deg,#1A0E06,#100800);border:1px solid rgba(205,127,50,.1)}
+/* Podium — bigger and more dramatic */
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin-bottom:14px;padding:0 4px}
+.pod{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.pod-av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid;margin-bottom:3px;position:relative}
+.pod1 .pod-av{width:52px;height:52px;border-color:var(--gold);box-shadow:0 0 20px rgba(255,184,0,.5),0 0 40px rgba(255,184,0,.2);animation:p1Glow 2s ease-in-out infinite}
+@keyframes p1Glow{0%,100%{box-shadow:0 0 16px rgba(255,184,0,.4),0 0 32px rgba(255,184,0,.15)}50%{box-shadow:0 0 28px rgba(255,184,0,.7),0 0 56px rgba(255,184,0,.3)}}
+.pod2 .pod-av{width:40px;height:40px;border-color:#C0C0C0;box-shadow:0 0 12px rgba(192,192,192,.3)}
+.pod3 .pod-av{width:36px;height:36px;border-color:#CD7F32;box-shadow:0 0 10px rgba(205,127,50,.3)}
+.pod-crown{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:14px;animation:crownBounce 2s ease-in-out infinite}
+@keyframes crownBounce{0%,100%{transform:translateX(-50%) translateY(0) rotate(-5deg)}50%{transform:translateX(-50%) translateY(-3px) rotate(5deg)}}
+.pod-name{font-family:var(--f3);font-size:8px;color:var(--text);text-align:center;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pod-coins{font-family:var(--f3);font-size:9px;color:var(--gold)}
+.pod-block{width:100%;border-radius:8px 8px 0 0;display:flex;align-items:center;justify-content:center;font-family:var(--f2);font-size:20px;color:rgba(255,255,255,.05);font-weight:900;position:relative}
+.pod1 .pod-block{height:60px;background:linear-gradient(180deg,rgba(50,32,0,.9),rgba(26,16,0,.95));border:1px solid rgba(255,184,0,.2);border-bottom:none}
+.pod2 .pod-block{height:42px;background:linear-gradient(180deg,rgba(28,28,28,.9),rgba(15,15,15,.95));border:1px solid rgba(192,192,192,.12);border-bottom:none}
+.pod3 .pod-block{height:30px;background:linear-gradient(180deg,rgba(30,14,4,.9),rgba(16,8,2,.95));border:1px solid rgba(205,127,50,.12);border-bottom:none}
+.pod1 .pod-block::after{content:'★';color:rgba(255,184,0,.15);font-size:32px;position:absolute}
 
-.rr{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:8px;margin-bottom:5px;transition:all .2s}
-.rr.me{background:rgba(0,152,234,.05);border-color:rgba(0,152,234,.3);animation:meGlow 3s ease-in-out infinite}
-@keyframes meGlow{0%,100%{box-shadow:none}50%{box-shadow:0 0 12px rgba(0,152,234,.15)}}
-.rr-pos{font-family:'Syne Mono';font-size:10px;color:var(--muted);width:18px;text-align:center}
-.rr-av{font-size:17px}
-.rr-name{flex:1;font-size:12px;font-weight:700;color:var(--text)}
-.rr.me .rr-name{color:var(--ton)}
-.rr-amt{font-family:'Syne Mono';font-size:10px;color:var(--gold)}
+/* Rest of ranking */
+.rr{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:9px 12px;display:flex;align-items:center;gap:7px;margin-bottom:5px;transition:all .2s}
+.rr.me{background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.28);animation:meG 3s ease-in-out infinite}
+@keyframes meG{0%,100%{box-shadow:none}50%{box-shadow:0 0 14px rgba(0,212,255,.12)}}
+.rr-pos{font-family:var(--f3);font-size:10px;color:var(--muted);width:16px;text-align:center}
+.rr-av{font-size:16px}
+.rr-name{flex:1;font-size:11px;font-weight:700;color:var(--text)}
+.rr.me .rr-name{color:var(--cyan)}
+.rr-amt{font-family:var(--f3);font-size:10px;color:var(--gold)}
 
-/* ════════════════════════════════════
-   WITHDRAW
-════════════════════════════════════ */
-.wd-hero{background:linear-gradient(135deg,#040E06,#04080F);border:1px solid rgba(0,152,234,.2);border-radius:20px;padding:18px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
-.wd-hero::before{content:'';position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:180px;height:180px;background:radial-gradient(circle,rgba(0,152,234,.08),transparent 70%);pointer-events:none}
-.wd-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:6px}
-.wd-coins{font-family:'Bebas Neue';font-size:48px;color:var(--ton);text-shadow:0 0 30px rgba(0,152,234,.5);line-height:1;letter-spacing:2px}
-.wd-unit{font-family:'Syne Mono';font-size:10px;color:var(--muted);margin-top:2px}
-.wd-eur{font-size:14px;color:var(--muted);margin-top:8px}
-.wd-eur span{color:var(--green);font-weight:700}
+/* ══════════════════════
+   WITHDRAW — PREMIUM
+══════════════════════ */
+.wd-hero{background:linear-gradient(135deg,rgba(0,8,16,.98),rgba(0,6,14,.98));border:1px solid var(--border2);border-radius:18px;padding:16px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
+.wd-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan2),transparent)}
+.wd-glow{position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:160px;height:160px;background:radial-gradient(circle,rgba(0,212,255,.07),transparent 65%);pointer-events:none}
+.wdh-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:5px}
+.wdh-coins{font-family:var(--f2);font-size:44px;color:var(--cyan);text-shadow:0 0 28px rgba(0,212,255,.5);line-height:1;letter-spacing:.5px}
+.wdh-unit{font-family:var(--f3);font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:1px}
+.wdh-eur{font-size:13px;color:var(--muted);margin-top:8px}
+.wdh-eur b{color:var(--green)}
 
 /* Progress path */
-.wd-progress{margin-bottom:12px}
-.wd-prog-top{display:flex;justify-content:space-between;font-size:10px;margin-bottom:5px}
-.wd-prog-lbl{color:var(--muted)}
-.wd-prog-pct{color:var(--ton);font-family:'Syne Mono';font-weight:bold}
-.wd-prog-track{height:8px;background:rgba(255,255,255,.04);border-radius:10px;overflow:hidden}
-.wd-prog-fill{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--ton),var(--green));box-shadow:0 0 10px var(--ton);transition:width 1.2s ease}
-.wd-prog-msg{font-family:'Syne Mono';font-size:10px;color:var(--gold);text-align:center;margin-top:6px;letter-spacing:1px}
+.wd-prog{margin-bottom:14px}
+.wdp-top{display:flex;justify-content:space-between;font-family:var(--f3);font-size:9px;margin-bottom:4px;letter-spacing:.5px}
+.wdp-lbl{color:var(--muted)}.wdp-pct{color:var(--cyan);font-weight:bold}
+.wdp-track{height:7px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.wdp-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--cyan2),var(--cyan),var(--green));box-shadow:0 0 10px var(--cyan2);transition:width 1.5s ease}
+.wdp-msg{font-family:var(--f3);font-size:9px;color:var(--gold);text-align:center;margin-top:5px;letter-spacing:.5px}
 
-.wd-method{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s}
-.wd-method:active{transform:scale(.98)}
-.wd-method.sel{border-color:var(--ton);background:rgba(0,152,234,.04)}
-.wm-top{display:flex;align-items:center;gap:9px}
-.wm-ico{font-size:22px}
-.wm-info{flex:1}
+/* Method cards */
+.wd-method{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 13px;margin-bottom:8px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.wd-method:active{transform:scale(.97)}
+.wd-method.sel{border-color:var(--cyan);background:rgba(0,212,255,.04)}
+.wm-top{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.wm-ico{font-size:20px}
 .wm-name{font-size:13px;font-weight:700;color:var(--white)}
-.wm-min{font-size:10px;color:var(--muted);margin-top:1px}
-.wm-time{font-family:'Syne Mono';font-size:9px;color:var(--ton);margin-top:2px}
+/* Minimum clearly visible */
+.wm-min-badge{display:inline-block;background:rgba(255,184,0,.12);border:1px solid rgba(255,184,0,.3);border-radius:20px;padding:2px 8px;font-family:var(--f3);font-size:9px;color:var(--gold);letter-spacing:.5px;margin-bottom:4px}
+.wm-detail{font-family:var(--f3);font-size:9px;color:var(--muted);line-height:1.6;letter-spacing:.5px}
 
-.inp-wrap{margin:10px 0}
-.inp-lbl{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:5px}
-.inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:11px;padding:11px 13px;font-size:13px;color:var(--text);font-family:'Space Grotesk';outline:none}
-.inp:focus{border-color:rgba(0,152,234,.3)}
+.inp-wrap{margin:8px 0}
+.inp-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px}
+.inp{width:100%;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--white);font-family:var(--f1);outline:none}
+.inp:focus{border-color:var(--cyan2);background:rgba(0,212,255,.02)}
 .inp::placeholder{color:var(--muted)}
+.wd-btn{background:linear-gradient(135deg,rgba(0,28,48,.9),rgba(0,18,36,.95));border:1.5px solid var(--cyan2);border-radius:12px;padding:13px;text-align:center;cursor:pointer;transition:all .2s;margin-top:6px;-webkit-tap-highlight-color:transparent}
+.wd-btn:active{transform:scale(.97)}
+.wd-btn.off{opacity:.4;pointer-events:none}
+.wd-btn-t{font-family:var(--f2);font-size:13px;color:var(--cyan);letter-spacing:2px}
+.live-pays{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:11px 13px;margin-top:10px}
+.lp-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
+.lp-row{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+.lp-row:last-child{border-bottom:none}
+.lp-av{font-size:14px}.lp-info{flex:1}
+.lp-name{font-size:11px;font-weight:700;color:var(--text)}
+.lp-time{font-family:var(--f3);font-size:9px;color:var(--muted)}
+.lp-amt{font-family:var(--f3);font-size:11px;color:var(--green)}
 
-.submit-btn{background:linear-gradient(135deg,#031828,#041030);border:1.5px solid var(--ton);border-radius:14px;padding:14px;text-align:center;cursor:pointer;transition:all .2s;margin-top:4px}
-.submit-btn:active{transform:scale(.98)}
-.submit-btn.disabled{opacity:.4;pointer-events:none}
-.sb-t{font-family:'Bebas Neue';font-size:15px;color:var(--ton);letter-spacing:2px}
-
-.live-payments{background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:12px 14px;margin-top:10px}
-.lp-title{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
-.payout-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-.payout-row:last-child{border-bottom:none}
-.pr-av{font-size:16px}
-.pr-info{flex:1}
-.pr-name{font-size:11px;font-weight:700;color:var(--text)}
-.pr-time{font-family:'Syne Mono';font-size:9px;color:var(--muted)}
-.pr-amt{font-family:'Syne Mono';font-size:11px;color:var(--green);font-weight:700}
-
-/* ════════════════════════════════════
+/* ══════════════════════
    REFERRAL
-════════════════════════════════════ */
-.ref-hero{background:linear-gradient(135deg,#080C1A,#0C0818);border:1px solid rgba(168,85,247,.22);border-radius:18px;padding:16px;text-align:center;margin-bottom:12px;position:relative;overflow:hidden}
-.ref-ico{font-size:40px;margin-bottom:6px;animation:refPulse 2s ease-in-out infinite}
-@keyframes refPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-.ref-title{font-family:'Bebas Neue';font-size:16px;color:var(--purple);letter-spacing:2px;margin-bottom:4px}
+══════════════════════ */
+.ref-hero{background:linear-gradient(135deg,rgba(7,5,18,.98),rgba(10,6,22,.98));border:1px solid rgba(191,95,255,.2);border-radius:16px;padding:15px;text-align:center;margin-bottom:12px}
+.ref-ico{font-size:34px;margin-bottom:5px;animation:refP 2s ease-in-out infinite}
+@keyframes refP{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.ref-title{font-family:var(--f2);font-size:13px;color:var(--purple);letter-spacing:2px;margin-bottom:4px}
 .ref-desc{font-size:11px;color:var(--muted);line-height:1.5}
-.ref-link-box{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:11px;padding:9px 12px;display:flex;align-items:center;gap:7px;margin-top:11px;cursor:pointer;transition:all .15s}
-.ref-link-box:active{transform:scale(.98)}
-.ref-link-txt{flex:1;font-family:'Syne Mono';font-size:10px;color:var(--ton);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ref-copy{font-family:'Syne Mono';font-size:8px;background:rgba(0,152,234,.1);border:1px solid rgba(0,152,234,.25);color:var(--ton);padding:3px 8px;border-radius:20px;flex-shrink:0;letter-spacing:1px}
-
-.ref-share-btn{background:linear-gradient(135deg,#12081A,#080C1A);border:1px solid rgba(168,85,247,.3);border-radius:14px;padding:12px;text-align:center;cursor:pointer;margin-top:8px;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
-.ref-share-btn:active{transform:scale(.98)}
-.rsb-t{font-family:'Bebas Neue';font-size:14px;color:var(--purple);letter-spacing:2px}
-
-.ref-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
-.rs-card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.rs-val{font-family:'Bebas Neue';font-size:24px;color:var(--white);letter-spacing:1px;margin-bottom:2px}
+.ref-link{background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:10px;padding:8px 12px;display:flex;align-items:center;gap:7px;margin-top:10px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ref-link:active{transform:scale(.97)}
+.ref-link-txt{flex:1;font-family:var(--f3);font-size:10px;color:var(--cyan);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-copy{font-family:var(--f3);font-size:8px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);color:var(--cyan);padding:3px 7px;border-radius:20px;flex-shrink:0}
+.ref-share{background:linear-gradient(135deg,rgba(14,7,24,.9),rgba(9,5,18,.95));border:1px solid rgba(191,95,255,.25);border-radius:12px;padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;margin-top:8px;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.ref-share:active{transform:scale(.97)}
+.ref-share-t{font-family:var(--f2);font-size:12px;color:var(--purple);letter-spacing:2px}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.rs-card{background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:11px;text-align:center}
+.rs-val{font-family:var(--f2);font-size:22px;color:var(--white);letter-spacing:.5px;margin-bottom:2px}
 .rs-lbl{font-size:10px;color:var(--muted)}
-
-.ref-milestones{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:13px 15px}
-.rm-title{font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:9px}
+.ref-miles{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.rm-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:8px}
 .rm-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.rm-ico{font-size:18px;width:26px}
-.rm-txt{flex:1;font-size:11px;color:var(--text)}
-.rm-val{font-family:'Syne Mono';font-size:11px;color:var(--ton)}
+.rm-ico{font-size:16px;width:22px}.rm-txt{flex:1;font-size:11px;color:var(--text)}
+.rm-val{font-family:var(--f3);font-size:11px;color:var(--cyan)}
 
-/* ════════════════════════════════════
+/* ══════════════════════
    CHAT
-════════════════════════════════════ */
-.chat-screen{display:flex;flex-direction:column;height:100%;padding:0}
-.chat-hdr{padding:9px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.ch-left{display:flex;align-items:center;gap:7px}
-.ch-dot{width:8px;height:8px;background:var(--green);border-radius:50%;box-shadow:0 0 7px var(--green);animation:blink 1.5s infinite}
-.ch-title{font-family:'Bebas Neue';font-size:13px;color:var(--white);letter-spacing:2px}
-.ch-sub{font-family:'Syne Mono';font-size:9px;color:var(--muted)}
-.ch-rules-btn{font-family:'Syne Mono';font-size:8px;background:rgba(255,61,87,.08);border:1px solid rgba(255,61,87,.2);color:#ff6680;padding:2px 7px;border-radius:20px;cursor:pointer;letter-spacing:1px}
-.chat-msgs{flex:1;overflow-y:auto;padding:9px 11px;display:flex;flex-direction:column;gap:6px;scrollbar-width:none}
+══════════════════════ */
+.chat-wrap{display:flex;flex-direction:column;height:100%;padding:0}
+.chat-hdr{padding:8px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.ch-l{display:flex;align-items:center;gap:6px}
+.ch-name{font-family:var(--f2);font-size:11px;color:var(--white);letter-spacing:1.5px}
+.ch-cnt{font-family:var(--f3);font-size:9px;color:var(--muted)}
+.ch-rules{font-family:var(--f3);font-size:8px;background:rgba(255,45,85,.07);border:1px solid rgba(255,45,85,.18);color:#FF6E8A;padding:2px 6px;border-radius:20px;cursor:pointer}
+.chat-msgs{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:5px;scrollbar-width:none}
 .chat-msgs::-webkit-scrollbar{display:none}
-.cm{display:flex;gap:7px;animation:fi .2s ease}
-.cm.mine{flex-direction:row-reverse}
-.cm-av-w{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
-.cm-av{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;border:1px solid var(--border)}
-.cm-un{font-family:'Syne Mono';font-size:7px;color:var(--muted);white-space:nowrap}
-.cm-bw{max-width:76%}
-.cm-bub{background:var(--panel);border:1px solid var(--border);border-radius:13px;border-bottom-left-radius:3px;padding:7px 10px;font-size:11px;color:var(--text);line-height:1.5}
-.cm.mine .cm-bub{background:linear-gradient(135deg,#031828,#030A14);border-color:rgba(0,152,234,.15);border-bottom-left-radius:13px;border-bottom-right-radius:3px}
-.cm-bub.sys{background:rgba(168,85,247,.06);border-color:rgba(168,85,247,.2);color:rgba(168,85,247,.9);text-align:center;font-family:'Syne Mono';font-size:9px;letter-spacing:1px;width:100%;border-radius:10px}
-.cm-meta{display:flex;align-items:center;gap:4px;margin-top:2px}
-.cm.mine .cm-meta{flex-direction:row-reverse}
-.cm-time{font-family:'Syne Mono';font-size:8px;color:var(--muted)}
-.cm-badge{font-size:7px;padding:1px 4px;border-radius:8px}
-.bg-ton{background:rgba(0,152,234,.1);color:var(--ton);border:1px solid rgba(0,152,234,.2)}
-.bg-gold{background:rgba(255,215,0,.1);color:var(--gold);border:1px solid rgba(255,215,0,.2)}
-.bg-green{background:rgba(0,230,118,.08);color:var(--green);border:1px solid rgba(0,230,118,.2)}
-.chat-input-bar{padding:8px 11px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(6,9,15,.97)}
-.ci-inp{flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:20px;padding:8px 13px;font-size:11px;color:var(--text);font-family:'Space Grotesk';outline:none}
-.ci-inp:focus{border-color:rgba(0,152,234,.25)}
-.ci-inp::placeholder{color:var(--muted)}
-.ci-send{width:34px;height:34px;background:linear-gradient(135deg,#031828,#030A14);border:1px solid var(--ton);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--ton);transition:all .2s;flex-shrink:0}
-.ci-send:active{transform:scale(.92)}
+.msg{display:flex;gap:6px;animation:svIn .2s ease}
+.msg.mine{flex-direction:row-reverse}
+.msg-av-w{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:1px}
+.msg-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;border:1px solid var(--border)}
+.msg-un{font-family:var(--f3);font-size:7px;color:var(--muted)}
+.msg-bw{max-width:76%}
+.msg-bub{background:var(--panel);border:1px solid var(--border);border-radius:12px;border-bottom-left-radius:3px;padding:7px 10px;font-size:11px;color:var(--text);line-height:1.5}
+.msg.mine .msg-bub{background:linear-gradient(135deg,rgba(0,28,48,.9),rgba(0,18,38,.95));border-color:rgba(0,212,255,.15);border-bottom-left-radius:12px;border-bottom-right-radius:3px}
+.msg-bub.sys{background:rgba(191,95,255,.06);border-color:rgba(191,95,255,.2);color:rgba(191,95,255,.9);text-align:center;font-family:var(--f3);font-size:9px;letter-spacing:.5px;width:100%;border-radius:10px}
+.msg-meta{display:flex;align-items:center;gap:4px;margin-top:2px}
+.msg.mine .msg-meta{flex-direction:row-reverse}
+.msg-time{font-family:var(--f3);font-size:7px;color:var(--muted)}
+.msg-bdg{font-size:7px;padding:1px 4px;border-radius:8px}
+.bdg-c{background:rgba(0,212,255,.08);color:var(--cyan);border:1px solid rgba(0,212,255,.18)}
+.bdg-g{background:rgba(255,184,0,.08);color:var(--gold);border:1px solid rgba(255,184,0,.18)}
+.bdg-n{background:rgba(0,255,136,.06);color:var(--green);border:1px solid rgba(0,255,136,.18)}
+.chat-bar{padding:7px 10px;border-top:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0;background:rgba(3,5,8,.98)}
+.chat-inp{flex:1;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:20px;padding:7px 12px;font-size:11px;color:var(--white);font-family:var(--f1);outline:none}
+.chat-inp:focus{border-color:rgba(0,212,255,.22)}
+.chat-inp::placeholder{color:var(--muted)}
+.chat-send{width:32px;height:32px;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.22);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;color:var(--cyan);transition:all .15s;flex-shrink:0;-webkit-tap-highlight-color:transparent}
+.chat-send:active{transform:scale(.9)}
 
-/* ════════════════════════════════════
-   ADMIN PANEL
-════════════════════════════════════ */
-#adminPanel{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:9000;display:none;flex-direction:column;overflow:hidden}
-#adminPanel.show{display:flex}
-.admin-hdr{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.admin-title{font-family:'Bebas Neue';font-size:18px;color:var(--red);letter-spacing:2px}
-.admin-close{font-size:20px;color:var(--muted);cursor:pointer;padding:4px 8px}
-.admin-body{flex:1;overflow-y:auto;padding:14px}
-.admin-login{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;max-width:280px;margin:0 auto}
-.admin-login-ico{font-size:48px}
-.admin-login-title{font-family:'Bebas Neue';font-size:24px;color:var(--white);letter-spacing:2px}
-.admin-login-sub{font-family:'Syne Mono';font-size:10px;color:var(--muted);letter-spacing:1px;text-align:center}
-.admin-inp{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:11px;padding:11px 13px;font-size:13px;color:var(--text);font-family:'Space Grotesk';outline:none;margin-top:4px}
-.admin-inp:focus{border-color:var(--ton)}
-.admin-login-btn{width:100%;background:linear-gradient(135deg,#031828,#041030);border:1.5px solid var(--ton);border-radius:12px;padding:12px;text-align:center;cursor:pointer;font-family:'Bebas Neue';font-size:15px;color:var(--ton);letter-spacing:2px}
-.admin-login-btn:active{transform:scale(.98)}
-.admin-err{font-family:'Syne Mono';font-size:10px;color:var(--red);letter-spacing:1px;display:none}
-
-.admin-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
-.ast{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px;text-align:center}
-.ast-val{font-family:'Bebas Neue';font-size:24px;color:var(--white);letter-spacing:1px;margin-bottom:2px}
-.ast-lbl{font-family:'Syne Mono';font-size:8px;color:var(--muted);letter-spacing:1px}
-
-.admin-section{margin-bottom:14px}
-.admin-sec-lbl{font-family:'Syne Mono';font-size:9px;color:var(--ton);letter-spacing:2px;margin-bottom:8px;text-transform:uppercase}
-.admin-wd-row{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:6px}
-.awr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.awr-name{font-size:12px;font-weight:700;color:var(--white)}
-.awr-amt{font-family:'Syne Mono';font-size:12px;color:var(--gold)}
-.awr-method{font-size:10px;color:var(--muted)}
-.awr-btns{display:flex;gap:6px;margin-top:6px}
-.awr-btn{flex:1;border-radius:9px;padding:7px;text-align:center;cursor:pointer;font-family:'Syne Mono';font-size:10px;letter-spacing:1px;border:1px solid}
-.awr-pay{background:rgba(0,230,118,.08);border-color:rgba(0,230,118,.3);color:var(--green)}
-.awr-rej{background:rgba(255,61,87,.08);border-color:rgba(255,61,87,.3);color:var(--red)}
+/* ══════════════════════
+   ADMIN
+══════════════════════ */
+#adm{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:9999;display:none;flex-direction:column}
+#adm.on{display:flex}
+.adm-hdr{background:var(--panel);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.adm-title{font-family:var(--f2);font-size:13px;color:var(--red);letter-spacing:3px}
+.adm-close{font-size:20px;color:var(--muted);cursor:pointer;padding:4px 8px;-webkit-tap-highlight-color:transparent}
+.adm-body{flex:1;overflow-y:auto;padding:14px}
+.adm-login{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;gap:12px;max-width:260px;margin:0 auto;text-align:center}
+.adm-ico{font-size:42px}
+.adm-t{font-family:var(--f2);font-size:16px;color:var(--white);letter-spacing:2px}
+.adm-s{font-family:var(--f3);font-size:10px;color:var(--muted);letter-spacing:1px}
+.adm-inp{width:100%;background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--white);font-family:var(--f1);outline:none;text-align:center;letter-spacing:2px}
+.adm-inp:focus{border-color:var(--cyan2)}
+.adm-btn{width:100%;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.25);border-radius:10px;padding:11px;text-align:center;cursor:pointer;font-family:var(--f2);font-size:12px;color:var(--cyan);letter-spacing:2px;-webkit-tap-highlight-color:transparent}
+.adm-btn:active{transform:scale(.97)}
+.adm-err{font-family:var(--f3);font-size:10px;color:var(--red);letter-spacing:1px;display:none}
+.adm-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.as{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:11px;text-align:center}
+.as-val{font-family:var(--f2);font-size:20px;color:var(--white);letter-spacing:.5px;margin-bottom:2px}
+.as-lbl{font-family:var(--f3);font-size:8px;color:var(--muted);letter-spacing:1px}
+.adm-cmd{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:12px}
+.adm-cmd-lbl{font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:10px}
+.adm-cmd-row{font-size:12px;color:var(--text);line-height:2.4}
+.adm-cmd-row span{color:var(--cyan)}
 </style>
 </head>
 <body>
-
-<canvas id="particles"></canvas>
+<canvas id="cv"></canvas>
 
 <!-- ══ SPLASH ══ -->
 <div id="splash">
-  <div class="splash-ring">
-    <svg viewBox="0 0 100 100" fill="none">
-      <circle cx="50" cy="50" r="48" stroke="rgba(0,152,234,.3)" stroke-width="1.5" stroke-dasharray="8 4"/>
-    </svg>
-    <svg class="r2" viewBox="0 0 100 100" fill="none">
-      <circle cx="50" cy="50" r="38" stroke="rgba(255,215,0,.2)" stroke-width="1" stroke-dasharray="4 8"/>
-    </svg>
-    <div class="splash-ico">⛏️</div>
+  <div class="sr-wrap">
+    <div class="sr sr1"></div><div class="sr sr2"></div><div class="sr sr3"></div>
+    <div class="sr-core"><div class="sr-ico">⛏️</div></div>
   </div>
-  <div class="splash-title">CRYPTO MINER<br><span>EMPIRE</span></div>
-  <div class="splash-sub">ACTIVANDO TU MINA...</div>
-  <div class="splash-bar"><div class="splash-fill" id="splashFill"></div></div>
-
-  <div class="splash-wow" id="splashWow">
-    <div class="wow-coins">+5 🪙</div>
-    <div class="wow-text">¡MINA ACTIVADA!</div>
-    <div class="wow-sub">Ya estás generando dinero</div>
+  <div class="sp-title">CRYPTO MINER<br><b>EMPIRE</b></div>
+  <div class="sp-sub">ACTIVANDO TU MINA</div>
+  <div class="sp-bar"><div class="sp-fill" id="spFill"></div></div>
+  <div class="sp-wow" id="spWow">
+    <div id="wowPart"></div>
+    <div class="wow-ring">⛏️</div>
+    <div class="wow-num">+5 🪙</div>
+    <div class="wow-lbl">¡MINA ACTIVADA!</div>
+    <div class="wow-sub">Ya estás generando dinero real</div>
   </div>
 </div>
 
 <!-- ══ APP ══ -->
 <div id="app">
-  <div class="ticker">
-    <div class="tk-track" id="ticker"></div>
-  </div>
-
-  <div class="toast" id="toast">
-    <span id="tIco">✅</span><span id="tTxt">msg</span>
-  </div>
+  <div class="ticker"><div class="tk-track" id="tkTrack"></div></div>
+  <div class="toast" id="toast"><span id="tIco">✅</span><span id="tMsg">msg</span></div>
 
   <div class="content">
 
-    <!-- ══ HOME ══ -->
+    <!-- HOME -->
     <div class="sv on" id="sv-home">
-      <div class="hero">
-        <div class="mine-rig-wrap" id="rigWrap">
-          <div class="rig-ring-outer"></div>
-          <div class="rig-ring-inner"></div>
-          <div class="rig-glow"></div>
-          <div class="rig-core"><div class="rig-core-ico">⛏️</div></div>
+      <div class="rig-zone">
+        <div class="rig-outer" id="rigOuter">
+          <div class="rig-ra"></div><div class="rig-rb"></div>
+          <div class="rig-glow"></div><div class="rig-flash"></div>
+          <div class="rig-body"><div class="rig-ico">⛏️</div></div>
         </div>
-        <div class="hero-title">CRYPTO MINER <span>EMPIRE</span></div>
-        <div class="hero-mining"><div class="mining-dot"></div><span id="miningStatus">MINANDO...</span></div>
+        <div class="rig-name">CRYPTO MINER <span>EMPIRE</span></div>
+        <div class="rig-live"><div class="rdot"></div><span>MINANDO EN TIEMPO REAL...</span></div>
       </div>
 
-      <div class="bal-card" id="balCard">
-        <div class="bal-top">
+      <div class="bal">
+        <div class="bal-row">
           <span class="bal-lbl">BALANCE</span>
-          <span class="bal-live"><div class="mining-dot"></div>produciendo en vivo</span>
+          <span class="bal-live-tag"><div class="rdot"></div>produciendo ahora</span>
         </div>
-        <div class="bal-amount" id="bCoins">—</div>
-        <div class="bal-sub">monedas 🪙 · vale <b id="bEur">—</b></div>
-        <div class="prog-wrap">
-          <div class="prog-labels">
-            <span>Meta: 1.000🪙 = 1€</span>
-            <span class="prog-pct" id="bPct">—%</span>
-          </div>
-          <div class="prog-track"><div class="prog-fill" id="pBar" style="width:0%"></div></div>
-          <div class="prog-msg" id="progMsg">Cargando...</div>
+        <div class="bal-amt" id="bAmt">—</div>
+        <div class="bal-eur">Equivale a <b id="bEur">—</b></div>
+        <div class="prog">
+          <div class="prog-row"><span class="prog-lbl">Meta: 1.000🪙 = 1€</span><span class="prog-pct" id="bPct">—%</span></div>
+          <div class="prog-track"><div class="prog-bar" id="pBar" style="width:0%"></div></div>
+          <div class="prog-msg" id="pMsg">Calculando...</div>
         </div>
       </div>
 
-      <div class="stats3">
-        <div class="sc c1" onclick="showToast('🔥','Racha activa: +'+streakBonus+'% producción')">
-          <div class="sc-ico">🔥</div><div class="sc-val" id="sStreak">—</div><div class="sc-lbl">RACHA</div>
+      <div class="stats">
+        <div class="st s1" onclick="showToast('🔥','Racha activa: +'+streakBonus+'% producción!')">
+          <div class="st-ico">🔥</div><div class="st-val" id="sStreak">—</div><div class="st-lbl">RACHA</div>
         </div>
-        <div class="sc c2" onclick="sw('ads')">
-          <div class="sc-ico">📺</div><div class="sc-val" id="sAds">—</div><div class="sc-lbl">ADS HOY</div>
+        <div class="st s2" onclick="sw('ads')">
+          <div class="st-ico">📺</div><div class="st-val" id="sAds">—</div><div class="st-lbl">ADS HOY</div>
         </div>
-        <div class="sc c3" onclick="sw('referral')">
-          <div class="sc-ico">👥</div><div class="sc-val" id="sRefs">—</div><div class="sc-lbl">AMIGOS</div>
+        <div class="st s3" onclick="sw('referral')">
+          <div class="st-ico">👥</div><div class="st-val" id="sRefs">—</div><div class="st-lbl">AMIGOS</div>
         </div>
       </div>
 
-      <div class="gpu-card" onclick="sw('mine')" id="gpuCard">
-        <div class="gpu-ico-wrap">
-          <span>🖥️</span>
-          <div class="gpu-active-dot"></div>
-        </div>
+      <div class="gpu" id="gpuCard" onclick="sw('mine')">
+        <div class="gpu-ic">🖥️<div class="gpu-dot"></div></div>
         <div class="gpu-info">
           <div class="gpu-name" id="gpuName">GPU BÁSICA</div>
-          <div class="gpu-cps" id="gpuCps">Producción: — monedas/seg</div>
-          <div class="gpu-prod"><span>⚡</span><span>ACTIVA — </span><span id="gpuLevel">Nv.1</span></div>
+          <div class="gpu-cps" id="gpuCps">— monedas/seg</div>
+          <div class="gpu-live"><div class="rdot"></div><span id="gpuLive">ACTIVA</span></div>
         </div>
         <div class="gpu-arr">›</div>
       </div>
 
-      <div class="abtn abtn-ton" onclick="sw('ads')">
+      <div class="abtn abtn-ads" onclick="sw('ads')">
         <span class="abtn-ico">📺</span>
-        <div class="abtn-body"><div class="abtn-title">Ver Anuncio</div><div class="abtn-desc">Gana monedas al instante</div></div>
-        <div class="abtn-tag tag-ton" id="adRewardTag">+5 🪙</div>
+        <div class="abtn-body"><div class="abtn-title">Ver Anuncio</div><div class="abtn-desc">Gana monedas al instante — garantizado</div></div>
+        <div class="abtn-tag tag-c" id="adTag">+5 🪙</div>
       </div>
-      <div class="abtn abtn-gold" onclick="sw('ads');setTimeout(()=>openBoostAd(),100)">
-        <span class="abtn-ico rocket-ico">🚀</span>
-        <div class="abtn-body"><div class="abtn-title">Boost x2 — 10 min</div><div class="abtn-desc" id="boostDesc">Duplica tus ganancias por anuncio</div></div>
-        <div class="abtn-tag tag-gold" id="boostTag">x2</div>
+      <div class="abtn abtn-boost" onclick="sw('ads')">
+        <span class="abtn-ico">🚀</span>
+        <div class="abtn-body"><div class="abtn-title">Boost x2 — 10 min</div><div class="abtn-desc" id="boostDesc">Duplica todas tus ganancias</div></div>
+        <div class="abtn-tag tag-g" id="boostTag">×2</div>
       </div>
     </div>
 
-    <!-- ══ ADS ══ -->
+    <!-- DAILY CHECK-IN -->
+    <div class="sv" id="sv-daily">
+      <div class="ph"><div class="ph-lbl">RECOMPENSA</div><div class="ph-title">Check-in Diario</div></div>
+      <div class="daily-hero">
+        <div class="dh-badge">🔥 RACHA ACTIVA</div>
+        <div class="dh-streak" id="dhStreak">0</div>
+        <div class="dh-lbl">DÍAS CONSECUTIVOS</div>
+        <div class="dh-days" id="dhDays"></div>
+        <div class="dh-claim" id="dhClaim" onclick="claimDaily()">
+          <div class="dh-claim-t" id="dhClaimT">🎁 RECLAMAR RECOMPENSA</div>
+          <div class="dh-claim-s" id="dhClaimS">Toca para recoger tus monedas</div>
+        </div>
+        <div class="dh-next" id="dhNext"></div>
+      </div>
+    </div>
+
+    <!-- ADS -->
     <div class="sv" id="sv-ads">
-      <div class="sec-lbl">GANAR MONEDAS</div>
-      <div class="sec-h">Ver Anuncios</div>
+      <div class="ph"><div class="ph-lbl">GANAR MONEDAS</div><div class="ph-title">Ver Anuncios</div></div>
 
       <div class="ad-card">
-        <div class="ad-vid-area">
-          <div class="ad-vid-lines"></div>
-          <div class="ad-countdown-overlay" id="adCountOverlay">
-            <span class="aco-ico">⏱</span>
-            <span class="aco-time" id="adCountTime">30</span>
+        <div class="ad-vid">
+          <div class="ad-lines"></div>
+          <!-- Countdown inside ad — main feature -->
+          <div class="ad-cd" id="adCd">
+            <div class="ad-cd-ring"></div>
+            <span class="ad-cd-num" id="adCdNum">30</span>
+            <span class="ad-cd-s">s</span>
           </div>
-          <div class="ad-play-btn" id="adPlayBtn" onclick="openAd()">▶</div>
+          <!-- X button after countdown -->
+          <div class="ad-x-btn" id="adXBtn" onclick="adFinished()">
+            <span class="ad-x-ico">✕</span>
+            <span class="ad-x-lbl">CERRAR</span>
+          </div>
+          <div class="ad-play" id="adPlay" onclick="openAd()">▶</div>
         </div>
         <div class="ad-rbar">
-          <span class="ad-rtxt">Recompensa garantizada:</span>
-          <span class="ad-ramt" id="adAmt">+5 🪙</span>
+          <span class="ar-txt">Recompensa garantizada</span>
+          <span class="ar-val" id="adVal">+5 🪙</span>
         </div>
       </div>
 
-      <div class="claim-btn waiting" id="claimBtn" onclick="claimAd()">
-        <div class="cb-t" id="cbT">▶ ABRE EL ANUNCIO PRIMERO</div>
-        <div class="cb-s" id="cbS">Toca el botón de arriba para ver el anuncio</div>
+      <div class="claim w" id="claimBtn" onclick="claimAd()">
+        <div class="claim-t" id="claimT">▶ ABRE EL ANUNCIO PRIMERO</div>
+        <div class="claim-s" id="claimS">Toca el botón de arriba para empezar</div>
       </div>
 
-      <div class="boost-card" onclick="openBoostAd()">
+      <div class="boost-card" onclick="openAd()">
         <span class="bc-ico">🚀</span>
-        <div class="bc-body"><div class="bc-title">Boost x2 — 10 minutos</div><div class="bc-desc">Ver este anuncio activa x2 en todo</div></div>
-        <span class="bc-tag">x2</span>
+        <div class="bc-body"><div class="bc-title">Activar Boost x2</div><div class="bc-desc">Este anuncio activa x2 en todo durante 10 min</div></div>
+        <span class="bc-tag">×2</span>
       </div>
 
-      <div class="cooldown-box" id="cooldownBox">
-        <div class="cd-title">⏰ PRÓXIMO ANUNCIO</div>
-        <div class="cd-timer" id="cdTimer">00:45</div>
-        <div class="cd-sub">Vuelve cuando termine el contador</div>
+      <div class="cd-box" id="cdBox">
+        <div class="cd-lbl">⏰ PRÓXIMO ANUNCIO EN</div>
+        <div class="cd-time" id="cdTime">00:45</div>
+        <div class="cd-sub">Vuelve cuando llegue a cero</div>
       </div>
 
       <div class="ad-prog">
-        <div class="ap-top">
-          <span class="ap-lbl">Anuncios hoy</span>
-          <span class="ap-cnt" id="apCnt">— / 20</span>
-        </div>
+        <div class="ap-row"><span class="ap-lbl">Anuncios hoy</span><span class="ap-cnt" id="apCnt">— / 20</span></div>
         <div class="ap-dots" id="apDots"></div>
       </div>
     </div>
 
-    <!-- ══ MINE ══ -->
+    <!-- MINE -->
     <div class="sv" id="sv-mine">
-      <div class="sec-lbl">TU EQUIPO</div>
-      <div class="sec-h">Mejora tu Mina</div>
-      <div id="rigList"></div>
+      <div class="ph"><div class="ph-lbl">TU EQUIPO</div><div class="ph-title">Mejora la Mina</div></div>
+      <div id="mineList"></div>
     </div>
 
-    <!-- ══ MISSIONS ══ -->
+    <!-- MISSIONS -->
     <div class="sv" id="sv-missions">
-      <div class="sec-lbl">PROGRESO</div>
-      <div class="sec-h">Misiones</div>
-      <div class="daily-mission">
-        <div class="dm-badge">🔥 MISIÓN DEL DÍA</div>
-        <div class="dm-title">Ver 5 anuncios hoy</div>
-        <div class="dm-desc">Acumula monedas rápidamente</div>
-        <div class="dm-reward" id="dmReward">+50 🪙</div>
+      <div class="ph"><div class="ph-lbl">PROGRESO</div><div class="ph-title">Misiones</div></div>
+      <div class="ms-daily">
+        <div class="msd-badge">🔥 MISIÓN DEL DÍA</div>
+        <div class="msd-title">Ver 5 anuncios hoy</div>
+        <div class="msd-desc">Completa y gana bonus extra</div>
+        <div class="msd-rew">+50 🪙</div>
       </div>
-      <div id="missionsList"></div>
+      <div id="msList"></div>
     </div>
 
-    <!-- ══ RANKING ══ -->
+    <!-- RANKING -->
     <div class="sv" id="sv-ranking">
-      <div class="season-banner">
-        <div class="sb-left">
-          <div class="sb-lbl">TEMPORADA 1 — PREMIOS</div>
-          <div class="sb-prizes">
-            <div class="sb-prize">🥇 Top 1 → <b style="color:var(--gold)">5€</b></div>
-            <div class="sb-prize">🥈 Top 2 → <b style="color:#C0C0C0">3€</b></div>
-            <div class="sb-prize">🥉 Top 3 → <b style="color:#CD7F32">1.5€</b></div>
+      <div class="ph"><div class="ph-lbl">COMPETICIÓN</div><div class="ph-title">Ranking Global</div></div>
+      <div class="season">
+        <div>
+          <div class="sn-lbl">TEMPORADA 1 — PREMIOS REALES</div>
+          <div class="sn-prizes">
+            <div class="sn-prize">🥇 Top 1 → <b style="color:var(--gold)">5€ garantizados</b></div>
+            <div class="sn-prize">🥈 Top 2 → <b style="color:#C0C0C0">3€</b></div>
+            <div class="sn-prize">🥉 Top 3 → <b style="color:#CD7F32">1.5€</b></div>
           </div>
         </div>
-        <div>
-          <div class="sb-time" id="seasonTimer">18D</div>
-          <div class="sb-sub">restantes</div>
-        </div>
+        <div><div class="sn-time" id="snTime">18D</div><div class="sn-sub">RESTANTES</div></div>
       </div>
       <div class="podium" id="podium"></div>
       <div id="rankList"></div>
     </div>
 
-    <!-- ══ WITHDRAW ══ -->
+    <!-- WITHDRAW -->
     <div class="sv" id="sv-withdraw">
-      <div class="sec-lbl">COBRAR TUS GANANCIAS</div>
-      <div class="sec-h">Retirar Dinero</div>
-
+      <div class="ph"><div class="ph-lbl">COBRAR GANANCIAS</div><div class="ph-title">Retirar Dinero</div></div>
       <div class="wd-hero">
-        <div class="wd-lbl">TUS MONEDAS</div>
-        <div class="wd-coins" id="wdCoins">—</div>
-        <div class="wd-unit">monedas 🪙</div>
-        <div class="wd-eur">Equivale a <span id="wdEur">—</span></div>
+        <div class="wd-glow"></div>
+        <div class="wdh-lbl">TUS MONEDAS ACUMULADAS</div>
+        <div class="wdh-coins" id="wdCoins">—</div>
+        <div class="wdh-unit">MONEDAS 🪙</div>
+        <div class="wdh-eur">Equivale a <b id="wdEur">—</b></div>
       </div>
-
-      <div class="wd-progress">
-        <div class="wd-prog-top">
-          <span class="wd-prog-lbl">Progreso al retiro</span>
-          <span class="wd-prog-pct" id="wdPct">—%</span>
-        </div>
-        <div class="wd-prog-track"><div class="wd-prog-fill" id="wdBar" style="width:0%"></div></div>
-        <div class="wd-prog-msg" id="wdMsg">Calculando...</div>
+      <div class="wd-prog">
+        <div class="wdp-top"><span class="wdp-lbl">Progreso al retiro</span><span class="wdp-pct" id="wdPct">—%</span></div>
+        <div class="wdp-track"><div class="wdp-bar" id="wdBar" style="width:0%"></div></div>
+        <div class="wdp-msg" id="wdMsg">Calculando...</div>
       </div>
-
       <div id="wdContent"></div>
     </div>
 
-    <!-- ══ REFERRAL ══ -->
+    <!-- REFERRAL -->
     <div class="sv" id="sv-referral">
-      <div class="sec-lbl">CRECER JUNTOS</div>
-      <div class="sec-h">Sistema de Referidos</div>
+      <div class="ph"><div class="ph-lbl">CRECER JUNTOS</div><div class="ph-title">Referidos</div></div>
       <div class="ref-hero">
         <div class="ref-ico">👥</div>
         <div class="ref-title">INVITA Y GANA PARA SIEMPRE</div>
-        <div class="ref-desc">+<b id="refB1" style="color:var(--ton)">50</b>🪙 al instante y <b id="refP1" style="color:var(--ton)">3</b>% de sus ganancias para siempre</div>
-        <div class="ref-link-box" onclick="copyLink()">
-          <span class="ref-link-txt" id="refLinkTxt">Cargando tu enlace...</span>
+        <div class="ref-desc">+<b id="rB" style="color:var(--cyan)">50</b>🪙 al instante · <b id="rP" style="color:var(--cyan)">3</b>% de sus ganancias forever</div>
+        <div class="ref-link" onclick="copyLink()">
+          <span class="ref-link-txt" id="refTxt">Cargando enlace...</span>
           <span class="ref-copy">COPIAR</span>
         </div>
-        <div class="ref-share-btn" onclick="shareLink()">
+        <div class="ref-share" onclick="shareLink()">
           <span style="font-size:16px">📤</span>
-          <span class="rsb-t">COMPARTIR EN TELEGRAM</span>
+          <span class="ref-share-t">COMPARTIR EN TELEGRAM</span>
         </div>
       </div>
-      <div class="ref-stats-grid">
-        <div class="rs-card"><div class="rs-val" id="refCount">—</div><div class="rs-lbl">Amigos invitados</div></div>
-        <div class="rs-card"><div class="rs-val" id="refEarned" style="color:var(--gold)">—🪙</div><div class="rs-lbl">Ganado por refs</div></div>
+      <div class="ref-stats">
+        <div class="rs-card"><div class="rs-val" id="rCount">—</div><div class="rs-lbl">Invitados</div></div>
+        <div class="rs-card"><div class="rs-val" id="rEarned" style="color:var(--gold)">—🪙</div><div class="rs-lbl">Ganado</div></div>
       </div>
-      <div class="ref-milestones">
-        <div class="rm-title">OBJETIVOS VIRALES</div>
+      <div class="ref-miles">
+        <div class="rm-lbl">OBJETIVOS VIRALES</div>
         <div class="rm-row"><span class="rm-ico">👥</span><span class="rm-txt">Invita 1 amigo</span><span class="rm-val">+50🪙</span></div>
         <div class="rm-row"><span class="rm-ico">🔥</span><span class="rm-txt">Invita 5 amigos</span><span class="rm-val">+300🪙</span></div>
         <div class="rm-row"><span class="rm-ico">💥</span><span class="rm-txt">Invita 10 amigos</span><span class="rm-val">+800🪙</span></div>
-        <div class="rm-row"><span class="rm-ico">♾️</span><span class="rm-txt">% sus ganancias ads</span><span class="rm-val">+3% forever</span></div>
+        <div class="rm-row"><span class="rm-ico">♾️</span><span class="rm-txt">% ganancias de por vida</span><span class="rm-val">3% forever</span></div>
       </div>
     </div>
 
-    <!-- ══ CHAT ══ -->
+    <!-- CHAT -->
     <div class="sv" id="sv-chat" style="height:100%;padding:0">
-      <div class="chat-screen">
+      <div class="chat-wrap">
         <div class="chat-hdr">
-          <div class="ch-left">
-            <div class="ch-dot"></div>
-            <div>
-              <div class="ch-title">CHAT COMUNIDAD</div>
-              <div class="ch-sub" id="chatOnline">— miembros online</div>
-            </div>
+          <div class="ch-l"><div class="rdot"></div>
+            <div><div class="ch-name">CHAT COMUNIDAD</div><div class="ch-cnt" id="chCnt">— online</div></div>
           </div>
-          <div class="ch-rules-btn">📋 REGLAS</div>
+          <div class="ch-rules">📋 REGLAS</div>
         </div>
         <div class="chat-msgs" id="chatMsgs"></div>
-        <div class="chat-input-bar">
-          <input class="ci-inp" id="chatInput" placeholder="Escribe un mensaje..." maxlength="200">
-          <div class="ci-send" onclick="sendChat()">➤</div>
+        <div class="chat-bar">
+          <input class="chat-inp" id="chatInp" placeholder="Escribe un mensaje..." maxlength="200">
+          <div class="chat-send" onclick="sendChat()">➤</div>
         </div>
       </div>
     </div>
 
   </div>
 
-  <!-- ══ BOTTOM NAV ══ -->
   <div class="bnav">
     <div class="ni on" id="ni-home" onclick="sw('home')"><span class="ni-ico">🏠</span><span class="ni-lbl">INICIO</span></div>
-    <div class="ni" id="ni-ads" onclick="sw('ads')"><span class="ni-ico">📺</span><span class="ni-lbl">GANAR</span><div class="ni-dot" id="adDot"></div></div>
-    <div class="ni" id="ni-missions" onclick="sw('missions');loadMissions()"><span class="ni-ico">🎯</span><span class="ni-lbl">MISIONES</span></div>
+    <div class="ni" id="ni-ads" onclick="sw('ads')"><span class="ni-ico">📺</span><span class="ni-lbl">GANAR</span><div class="ni-dot" id="adBadge"></div></div>
+    <div class="ni" id="ni-daily" onclick="sw('daily');renderDaily()"><span class="ni-ico">🎁</span><span class="ni-lbl">DIARIA</span><div class="ni-dot" id="dailyBadge"></div></div>
     <div class="ni" id="ni-ranking" onclick="sw('ranking');loadRanking()"><span class="ni-ico">🏆</span><span class="ni-lbl">RANK</span></div>
     <div class="ni" id="ni-withdraw" onclick="sw('withdraw')"><span class="ni-ico">💸</span><span class="ni-lbl">COBRAR</span></div>
   </div>
 </div>
 
-<!-- ══ ADMIN PANEL ══ -->
-<div id="adminPanel">
-  <div class="admin-hdr">
-    <div class="admin-title">🔐 ADMIN PANEL</div>
-    <div class="admin-close" onclick="closeAdmin()">✕</div>
+<!-- ══ ADMIN ══ -->
+<div id="adm">
+  <div class="adm-hdr">
+    <div class="adm-title">⚠ ZONA ADMIN</div>
+    <div class="adm-close" onclick="closeAdm()">✕</div>
   </div>
-  <div class="admin-body" id="adminBody">
-    <div class="admin-login" id="adminLogin">
-      <div class="admin-login-ico">🔐</div>
-      <div class="admin-login-title">ACCESO PRIVADO</div>
-      <div class="admin-login-sub">Solo administradores autorizados</div>
-      <div>
-        <div class="inp-lbl">CONTRASEÑA</div>
-        <input class="admin-inp" type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')adminLogin()">
-      </div>
-      <div class="admin-login-btn" onclick="adminLogin()">ENTRAR</div>
-      <div class="admin-err" id="adminErr">❌ Contraseña incorrecta</div>
+  <div class="adm-body">
+    <div class="adm-login" id="admLogin">
+      <div class="adm-ico">🔐</div>
+      <div class="adm-t">ACCESO PRIVADO</div>
+      <div class="adm-s">Solo administradores autorizados</div>
+      <input type="password" class="adm-inp" id="admPass" placeholder="Contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="adm-btn" onclick="doLogin()">ENTRAR</div>
+      <div class="adm-err" id="admErr">❌ Contraseña incorrecta</div>
     </div>
-    <div id="adminDash" style="display:none"></div>
+    <div id="admDash" style="display:none">
+      <div style="font-family:var(--f3);font-size:9px;color:var(--cyan);letter-spacing:2px;margin-bottom:12px">PANEL DE CONTROL</div>
+      <div class="adm-stats">
+        <div class="as"><div class="as-val" style="color:var(--cyan)" id="aUs">—</div><div class="as-lbl">USUARIOS</div></div>
+        <div class="as"><div class="as-val" style="color:var(--green)" id="aAct">—</div><div class="as-lbl">ACTIVOS HOY</div></div>
+        <div class="as"><div class="as-val" style="color:var(--gold)" id="aPaid">—€</div><div class="as-lbl">TOTAL PAGADO</div></div>
+        <div class="as"><div class="as-val" style="color:var(--red)" id="aPend">—</div><div class="as-lbl">PENDIENTES</div></div>
+      </div>
+      <div class="adm-cmd">
+        <div class="adm-cmd-lbl">COMANDOS BOT TELEGRAM</div>
+        <div class="adm-cmd-row">
+          <span>/admin</span> — estadísticas generales<br>
+          <span>/pending</span> — retiros pendientes<br>
+          <span>/user &lt;id&gt;</span> — ver usuario<br>
+          <span>/economy</span> — economía del bot<br>
+          <span>/ban &lt;id&gt;</span> — banear usuario<br>
+          <span>/unban &lt;id&gt;</span> — desbanear<br>
+          <span>/suspicious</span> — cuentas sospechosas
+        </div>
+      </div>
+      <div style="background:rgba(255,45,85,.06);border:1px solid rgba(255,45,85,.2);border-radius:12px;padding:12px;font-family:var(--f3);font-size:9px;color:var(--red);letter-spacing:.8px;line-height:1.8">
+        🔒 ZONA PRIVADA — Solo accesible con contraseña<br>
+        Acceso: 7 toques rápidos en el pico ⛏️
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════
-//  TELEGRAM
-// ══════════════════════════════════════
+// ═══════════════════════════
+// TELEGRAM SDK
+// ═══════════════════════════
 const tg=window.Telegram?.WebApp;
-if(tg){tg.ready();tg.expand();tg.setHeaderColor('#06090F');tg.setBackgroundColor('#06090F');}
+if(tg){tg.ready();tg.expand();tg.setHeaderColor('#030508');tg.setBackgroundColor('#030508');}
 const initData=tg?.initData||'';
 
-// ══════════════════════════════════════
-//  API
-// ══════════════════════════════════════
-async function api(path,method='GET',body=null){
-  const opts={method,headers:{'Content-Type':'application/json','X-Telegram-Init-Data':initData}};
-  if(body) opts.body=JSON.stringify(body);
-  try{const r=await fetch(path,opts);return r.json();}
-  catch(e){return{error:'network_error'};}
+// BACK BUTTON — prevents exiting app
+if(tg){
+  tg.BackButton.onClick(()=>{
+    const cur=document.querySelector('.sv.on');
+    const curId=cur?.id?.replace('sv-','');
+    if(curId&&curId!=='home'){sw('home');tg.BackButton.hide();}
+    else tg.BackButton.hide();
+  });
 }
 
-// ══════════════════════════════════════
-//  PARTICLES
-// ══════════════════════════════════════
-const cv=document.getElementById('particles'),cx=cv.getContext('2d');
+// ═══════════════════════════
+// PARTICLES
+// ═══════════════════════════
+const cv=document.getElementById('cv'),cx=cv.getContext('2d');
 let pts=[];
-function rsz(){cv.width=innerWidth;cv.height=innerHeight;}
-function mkPts(){pts=Array.from({length:80},()=>({
-  x:Math.random()*cv.width,y:Math.random()*cv.height,
-  r:Math.random()*1.2,a:Math.random()*Math.PI*2,sp:Math.random()*.003+.001,
-  c:Math.random()<.3?'0,152,234':'255,215,0'
-}));}
-function drawPts(){
-  cx.clearRect(0,0,cv.width,cv.height);
-  pts.forEach(p=>{p.a+=p.sp;const al=(Math.sin(p.a)+1)/2*.4;
-    cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);
-    cx.fillStyle=`rgba(${p.c},${al})`;cx.fill();});
-  requestAnimationFrame(drawPts);
-}
-rsz();mkPts();drawPts();
-window.addEventListener('resize',()=>{rsz();mkPts();});
+const rsz=()=>{cv.width=innerWidth;cv.height=innerHeight};
+const mkPts=()=>pts=Array.from({length:55},()=>({
+  x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random()*1.1,
+  a:Math.random()*Math.PI*2,sp:Math.random()*.003+.001,
+  c:Math.random()<.4?'0,212,255':'255,184,0'
+}));
+const drawPts=()=>{cx.clearRect(0,0,cv.width,cv.height);pts.forEach(p=>{p.a+=p.sp;const al=(Math.sin(p.a)+1)/2*.32;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fillStyle=`rgba(${p.c},${al})`;cx.fill();});requestAnimationFrame(drawPts)};
+rsz();mkPts();drawPts();window.addEventListener('resize',()=>{rsz();mkPts()});
 
-// ══════════════════════════════════════
-//  STATE
-// ══════════════════════════════════════
-let userData=null,coinVal=0,rcps=0,streakBonus=0;
-let adOpenTime=0,adMinSecs=30,adRewardMin=4,adRewardMax=6;
+// ═══════════════════════════
+// TICKER
+// ═══════════════════════════
+const TICKS=[
+  {c:'tkg',t:'✅ @CarlosM retiró 1.00€ — PayPal < 24h'},
+  {c:'tkc',t:'⛏️ @MinerPro99 mejoró a Granja Minera'},
+  {c:'',   t:'🔥 @SatoshiG lleva 9 días de racha'},
+  {c:'tkg',t:'✅ @Elena_R retiró 1.20€ — Telegram Wallet'},
+  {c:'tky',t:'🏆 @CryptoK lidera con 9.840🪙'},
+  {c:'tkc',t:'⛏️ @LauraP alcanzó nivel 4 — Data Center'},
+  {c:'tkg',t:'✅ @HashM retiró 1.00€ — PayPal procesado'},
+  {c:'',   t:'👥 @JuanC invitó 5 amigos — +250🪙'},
+  {c:'tkg',t:'✅ @PedroL retiró 1.50€ — verificado'},
+  {c:'tkc',t:'🚀 @NoemiB activó Boost x2'},
+];
+(()=>{const el=document.getElementById('tkTrack'),d=[...TICKS,...TICKS];el.innerHTML=d.map(t=>`<span class="tk ${t.c}">${t.t}</span>`).join('')})();
+
+// ═══════════════════════════
+// API
+// ═══════════════════════════
+async function api(path,method='GET',body=null){
+  try{const opts={method,headers:{'Content-Type':'application/json','X-Telegram-Init-Data':initData}};
+  if(body)opts.body=JSON.stringify(body);return(await fetch(path,opts)).json();}
+  catch(e){return{error:'network'};}
+}
+
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+let userData=null,coins=0,rcps=0,streakBonus=0;
+let adOpenTime=0,adMinSecs=30,adRMin=4,adRMax=6;
 let adInterval=null,cdInterval=null;
-let selMethod=null,refLink='',refLinkData='';
+let adFinishedOk=false;
+let selMethod=null,myLink='';
 
 const MINES=[
-  {lvl:1,ico:'🖥️',name:'GPU Básica',cps:0.0001,cost:0},
-  {lvl:2,ico:'🎮',name:'GPU Gamer',cps:0.0003,cost:200},
-  {lvl:3,ico:'⛏️',name:'Granja Minera',cps:0.0008,cost:800},
-  {lvl:4,ico:'🏭',name:'Data Center',cps:0.002,cost:3000},
-  {lvl:5,ico:'🌐',name:'Super Cluster',cps:0.005,cost:10000},
+  {l:1,ico:'🖥️',name:'GPU Básica',cps:0.0001,cost:0},
+  {l:2,ico:'🎮',name:'GPU Gamer',cps:0.0003,cost:200},
+  {l:3,ico:'⛏️',name:'Granja Minera',cps:0.0008,cost:800},
+  {l:4,ico:'🏭',name:'Data Center',cps:0.002,cost:3000},
+  {l:5,ico:'🌐',name:'Super Cluster',cps:0.005,cost:10000},
 ];
+const DAILY_R={1:20,2:30,3:50,4:70,5:100,6:130,7:200};
 
-// ══════════════════════════════════════
-//  FLOATING COINS EFFECT
-// ══════════════════════════════════════
+// ═══════════════════════════
+// COINS EFFECT
+// ═══════════════════════════
 function spawnCoins(amount,x,y){
-  for(let i=0;i<Math.min(Math.ceil(amount/2),5);i++){
+  const n=Math.min(Math.ceil(amount/1.5),7);
+  for(let i=0;i<n;i++){
     setTimeout(()=>{
       const el=document.createElement('div');
-      el.className='float-coin';
-      el.textContent='+'+Math.floor(amount/Math.min(Math.ceil(amount/2),5))+'🪙';
-      el.style.left=(x||Math.random()*window.innerWidth*.6+window.innerWidth*.2)+'px';
-      el.style.top=(y||window.innerHeight*.4)+'px';
-      document.body.appendChild(el);
-      setTimeout(()=>el.remove(),900);
-    },i*150);
+      el.className='fc';
+      el.textContent='+'+Math.ceil(amount/n)+'🪙';
+      el.style.cssText=`left:${x||(20+Math.random()*60)}%;top:${y||(window.innerHeight*.35+Math.random()*80)}px`;
+      document.body.appendChild(el);setTimeout(()=>el.remove(),1000);
+    },i*130);
   }
 }
 
-// ══════════════════════════════════════
-//  MINING PARTICLES
-// ══════════════════════════════════════
-let mineParticleTimer=null;
-function startMineParticles(){
-  const wrap=document.getElementById('rigWrap');
-  if(!wrap||mineParticleTimer)return;
-  mineParticleTimer=setInterval(()=>{
-    const p=document.createElement('div');
-    p.className='mine-particle';
-    const angle=Math.random()*Math.PI*2;
-    const r=45+Math.random()*10;
-    p.style.cssText=`left:${50+Math.cos(angle)*r}px;top:${50+Math.sin(angle)*r}px;
-      background:${Math.random()<.5?'var(--ton)':'var(--gold)'};
-      animation:floatUp .8s ease forwards;opacity:.8`;
-    wrap.appendChild(p);
-    setTimeout(()=>p.remove(),800);
-  },600);
-}
+// ═══════════════════════════
+// RIG TAP = admin
+// ═══════════════════════════
+let rigTaps=0,rigTimer=null;
+document.getElementById('rigOuter').addEventListener('click',()=>{
+  rigTaps++;clearTimeout(rigTimer);
+  rigTimer=setTimeout(()=>rigTaps=0,700);
+  if(rigTaps>=7){rigTaps=0;document.getElementById('adm').classList.add('on');}
+  tg?.HapticFeedback?.impactOccurred('light');
+});
 
-// ══════════════════════════════════════
-//  LOAD USER
-// ══════════════════════════════════════
+// ═══════════════════════════
+// LOAD USER
+// ═══════════════════════════
 async function loadUser(){
-  const d=await api('/api/user');
-  if(d.error)return;
-  userData=d;coinVal=d.coins;rcps=d.mine_rcps;streakBonus=d.streak_bonus;
-  updateHomeUI(d);updateWithdrawUI(d);
-  loadReferral();
-  // Show ad dot if ads available
-  if(d.ads_today<d.ads_max)document.getElementById('adDot').classList.add('show');
-  else document.getElementById('adDot').classList.remove('show');
+  const d=await api('/api/user');if(!d||d.error)return;
+  userData=d;coins=d.coins;rcps=d.mine_rcps;streakBonus=d.streak_bonus;
+  updateHome(d);updateWd(d);loadRef();
+  g('adBadge').classList.toggle('on',d.ads_today<d.ads_max);
+  renderDaily();
 }
 
-function updateHomeUI(d){
+function updateHome(d){
   const pct=Math.min(d.coins/1000*100,100);
-  document.getElementById('bCoins').textContent=Math.floor(d.coins).toLocaleString('es');
-  document.getElementById('bEur').textContent=(d.coins/1000).toFixed(3)+'€';
-  document.getElementById('bPct').textContent=pct.toFixed(1)+'%';
-  document.getElementById('pBar').style.width=pct+'%';
-
-  // Motivational message
-  const remaining=Math.max(0,1000-d.coins);
-  let progMsg='';
-  if(pct>=100)progMsg='🎉 ¡Listo para retirar!';
-  else if(pct>=75)progMsg='🔥 ¡Casi! Faltan solo '+Math.ceil(remaining)+' 🪙';
-  else if(pct>=50)progMsg='⚡ Estás al '+pct.toFixed(0)+'% — ¡sigue así!';
-  else if(pct>=25)progMsg='🚀 ¡Buen ritmo! Faltan '+Math.ceil(remaining)+' 🪙';
-  else progMsg='💡 Mira anuncios para acelerar';
-  document.getElementById('progMsg').textContent=progMsg;
-
-  document.getElementById('sStreak').textContent=d.streak;
-  document.getElementById('sAds').textContent=d.ads_today+'/'+d.ads_max;
-  document.getElementById('sRefs').textContent=d.referrals;
-
-  const mine=MINES.find(m=>m.lvl===d.mine_level)||MINES[0];
-  document.getElementById('gpuName').textContent=d.mine_name.toUpperCase();
-  document.getElementById('gpuCps').textContent='Producción: +'+d.mine_rcps.toFixed(5)+'/seg';
-  document.getElementById('gpuLevel').textContent='Nv.'+d.mine_level;
-  document.getElementById('miningStatus').textContent='MINANDO EN TIEMPO REAL...';
-
-  document.getElementById('adRewardTag').textContent='+'+adRewardMin+'-'+adRewardMax+' 🪙';
-  document.getElementById('adAmt').textContent='+'+adRewardMin+'-'+adRewardMax+'🪙';
-  document.getElementById('apCnt').textContent=d.ads_today+' / '+d.ads_max;
-  buildDots(d.ads_today,d.ads_max);
-
-  // Boost display
-  if(d.boost_active){
-    document.getElementById('boostTag').textContent='x2 '+d.boost_mins+'m';
-    document.getElementById('boostDesc').textContent='BOOST ACTIVO: '+d.boost_mins+' min restantes 🔥';
-  }
-  buildRigs(d.mine_level,d.coins);
-  updateWithdrawUI(d);
+  s('bAmt',Math.floor(d.coins).toLocaleString('es'));
+  s('bEur',(d.coins/1000).toFixed(3)+'€');
+  s('bPct',pct.toFixed(1)+'%');
+  g('pBar').style.width=pct+'%';
+  const rem=Math.max(0,1000-d.coins);
+  g('pMsg').textContent=pct>=100?'🎉 ¡LISTO PARA RETIRAR!':pct>=75?`🔥 Solo ${Math.ceil(rem)}🪙 más — ¡casi!`:pct>=50?`⚡ Al ${pct.toFixed(0)}% — ¡buen ritmo!`:pct>=25?`🚀 ${Math.ceil(rem)}🪙 para 1€ — sigue así`:`💡 Ve anuncios para acelerar`;
+  s('sStreak',d.streak);s('sAds',d.ads_today+'/'+d.ads_max);s('sRefs',d.referrals);
+  s('gpuName',d.mine_name.toUpperCase());
+  s('gpuCps','+'+d.mine_rcps.toFixed(5)+'/seg');
+  s('gpuLive','ACTIVA · NV.'+d.mine_level);
+  s('adTag','+'+adRMin+'-'+adRMax+' 🪙');s('adVal','+'+adRMin+'-'+adRMax+'🪙');
+  if(d.boost_active){s('boostTag','×2 '+d.boost_mins+'m');s('boostDesc','BOOST ACTIVO — '+d.boost_mins+' min restantes 🔥');}
+  buildMines(d.mine_level,d.coins);buildDots(d.ads_today,d.ads_max);
+  s('apCnt',d.ads_today+' / '+d.ads_max);
 }
 
-// ══════════════════════════════════════
-//  LIVE COUNTER
-// ══════════════════════════════════════
-function updateBalance(){
-  const v=coinVal;
-  const el=document.getElementById('bCoins');
-  if(el)el.textContent=Math.floor(v).toLocaleString('es');
-  const pct=Math.min(v/1000*100,100);
-  const pb=document.getElementById('pBar');
-  if(pb)pb.style.width=pct+'%';
-  const pe=document.getElementById('bPct');
-  if(pe)pe.textContent=pct.toFixed(1)+'%';
-  const be=document.getElementById('bEur');
-  if(be)be.textContent=(v/1000).toFixed(4)+'€';
-  const wc=document.getElementById('wdCoins');
-  if(wc)wc.textContent=Math.floor(v).toLocaleString('es');
-  const we=document.getElementById('wdEur');
-  if(we)we.innerHTML='<span style="color:var(--green)">≈'+(v/1000).toFixed(3)+'€</span>';
-  const wp=document.getElementById('wdBar');
-  if(wp)wp.style.width=pct+'%';
-  const wpp=document.getElementById('wdPct');
-  if(wpp)wpp.textContent=pct.toFixed(1)+'%';
+// Live counter
+function updateBal(){
+  s('bAmt',Math.floor(coins).toLocaleString('es'));
+  const p=Math.min(coins/1000*100,100);
+  g('pBar').style.width=p+'%';g('wdBar').style.width=p+'%';
+  s('bPct',p.toFixed(1)+'%');s('bEur',(coins/1000).toFixed(4)+'€');
+  s('wdCoins',Math.floor(coins).toLocaleString('es'));
+  s('wdEur',(coins/1000).toFixed(3)+'€');s('wdPct',p.toFixed(1)+'%');
 }
-setInterval(()=>{coinVal+=rcps;updateBalance();},1000);
-
-// Floating prod indicator every 5s
+setInterval(()=>{coins+=rcps;updateBal();},1000);
 setInterval(()=>{
   if(rcps<=0)return;
-  const earned=(rcps*5).toFixed(4);
-  const card=document.getElementById('gpuCard');
-  if(!card)return;
-  const fl=document.createElement('div');
-  fl.className='prod-float';fl.textContent='+'+earned;
-  card.appendChild(fl);setTimeout(()=>fl.remove(),1500);
+  const c=g('gpuCard');if(!c)return;
+  const f=document.createElement('div');f.className='gf';
+  f.textContent='+'+((rcps*5).toFixed(4))+'🪙';c.appendChild(f);
+  setTimeout(()=>f.remove(),1500);
 },5000);
 
-// ══════════════════════════════════════
-//  GPU / MINE RIGS
-// ══════════════════════════════════════
-function buildRigs(cur,coins){
-  const el=document.getElementById('rigList');
-  if(!el)return;
+// ═══════════════════════════
+// MINES
+// ═══════════════════════════
+function buildMines(cur,bal){
+  const el=g('mineList');if(!el)return;
   el.innerHTML=MINES.map(m=>{
-    const isCur=m.lvl===cur;
-    const isLocked=m.lvl>cur+1;
-    const canBuy=m.lvl===cur+1&&coins>=m.cost;
-    let badge=isCur?'<span class="rig-badge rb-cur">✓ ACTUAL</span>':
-      canBuy?'<span class="rig-badge rb-buy">'+m.cost.toLocaleString('es')+' 🪙 ← DISPONIBLE</span>':
-      isLocked?'<span class="rig-badge rb-lock">🔒 '+m.cost.toLocaleString('es')+' 🪙</span>':
-      '<span class="rig-badge rb-cost">'+m.cost.toLocaleString('es')+' 🪙</span>';
-    let liveEl=isCur?`<div class="rig-live"><span class="mining-dot"></span>+${(m.cps*(1+streakBonus/100)).toFixed(5)}/seg ahora</div>`:'';
-    return`<div class="rig-card ${isCur?'current':''} ${isLocked?'locked':''} ${canBuy?'unlockable':''}"
-      ${!isLocked&&!isCur?`onclick="confirmUpgrade(${m.lvl},${m.cost})"`:''}>
-      <div class="rig-ico-wrap">
-        <span>${m.ico}</span>
-        <div class="rig-status"></div>
-      </div>
-      <div class="rig-info">
-        <div class="rig-name">${m.name}</div>
-        <div class="rig-stat">+${m.cps} monedas/seg · ${m.lvl}× velocidad</div>
-        ${liveEl}
-      </div>${badge}</div>`;
+    const isA=m.l===cur,isL=m.l>cur+1,canB=m.l===cur+1&&bal>=m.cost;
+    const badge=isA?'<span class="mc-bdg mb-a">✓ ACTIVA</span>':
+      canB?`<span class="mc-bdg mb-b">${m.cost.toLocaleString('es')}🪙 COMPRAR</span>`:
+      isL?`<span class="mc-bdg mb-l">🔒 ${m.cost.toLocaleString('es')}🪙</span>`:
+      `<span class="mc-bdg mb-c">${m.cost.toLocaleString('es')}🪙</span>`;
+    const live=isA?`<div class="mc-live"><div class="rdot"></div><span>+${(m.cps*(1+streakBonus/100)).toFixed(5)}/seg ahora</span></div>`:'';
+    return`<div class="mine-card ${isA?'cur':''} ${isL?'lck':''} ${canB?'buy':''}" ${!isL&&!isA?`onclick="tryUpgrade(${m.l},${m.cost})"`:''}>
+      <div class="mc-ic">${m.ico}<div class="mc-st"></div></div>
+      <div class="mc-info"><div class="mc-name">${m.name}</div><div class="mc-stat">+${m.cps}/seg · ×${m.l} velocidad</div>${live}</div>
+      ${badge}</div>`;
   }).join('');
 }
-
-async function confirmUpgrade(lvl,cost){
-  if(!userData||userData.coins<cost){
-    showToast('❌','Necesitas '+cost.toLocaleString('es')+' 🪙 (tienes '+Math.floor(userData?.coins||0)+')');
-    return;
-  }
-  showToast('⬆️','Mejorando mina...');
-  tg?.HapticFeedback?.impactOccurred('medium');
-  await loadUser();
-  showToast('🎉','¡Mina mejorada! Producción aumentada');
+async function tryUpgrade(l,cost){
+  if(!userData||userData.coins<cost){showToast('❌','Necesitas '+cost.toLocaleString('es')+'🪙');return;}
+  showToast('⬆️','Mejorando mina...');tg?.HapticFeedback?.impactOccurred('medium');
+  await loadUser();spawnCoins(20);showToast('🎉','¡Mina mejorada! Producción aumentada');
 }
 
-// ══════════════════════════════════════
-//  ADS
-// ══════════════════════════════════════
-async function openAd(){
-  const btn=document.getElementById('adPlayBtn');
-  btn.classList.add('loading');btn.textContent='⟳';
-  const r=await api('/api/ad/open','POST');
-  btn.classList.remove('loading');btn.textContent='▶';
+// ═══════════════════════════
+// DAILY CHECK-IN
+// ═══════════════════════════
+function renderDaily(){
+  const u=userData;
+  const streak=u?.streak||0;
+  s('dhStreak',streak);
+  const today=u?.last_daily_date===new Date().toISOString().split('T')[0];
+  const days=[1,2,3,4,5,6,7];
+  const el=g('dhDays');
+  if(el){
+    el.innerHTML=days.map(d=>{
+      const done=d<(streak%7||7);
+      const isTod=d===(streak%7||7);
+      return`<div class="dd ${done?'done':isTod?'today':'future'}">
+        <div class="dd-n">D${d}</div>
+        <div class="dd-r">${DAILY_R[d]||200}</div>
+      </div>`;
+    }).join('');
+  }
+  const claimEl=g('dhClaim');
+  const claimT=g('dhClaimT');
+  const claimS=g('dhClaimS');
+  const dayR=DAILY_R[(streak%7)||7]||200;
+  if(today){
+    if(claimEl)claimEl.classList.add('done');
+    s('dhClaimT','✅ YA RECLAMADO HOY');
+    s('dhClaimS','Vuelve mañana para continuar la racha');
+    showNextCountdown();
+    g('dailyBadge').classList.remove('on');
+  }else{
+    if(claimEl)claimEl.classList.remove('done');
+    s('dhClaimT','🎁 RECLAMAR +'+dayR+' 🪙');
+    s('dhClaimS','Día '+(streak%7||1)+' de racha — ¡toca para cobrar!');
+    g('dailyBadge').classList.add('on');
+    s('dhNext','');
+  }
+}
 
+function showNextCountdown(){
+  const now=new Date();
+  const tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);tomorrow.setHours(0,0,0,0);
+  const diff=tomorrow-now;
+  const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),sec=Math.floor((diff%60000)/1000);
+  s('dhNext',`⏰ Próxima en: <span>${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}</span>`);
+}
+
+async function claimDaily(){
+  const today=new Date().toISOString().split('T')[0];
+  if(userData?.last_daily_date===today)return;
+  const streak=userData?.streak||0;
+  const dayR=DAILY_R[(streak%7)||1]||20;
+  coins+=dayR;updateBal();
+  spawnCoins(dayR);
+  tg?.HapticFeedback?.notificationOccurred('success');
+  showToast('🎁',`+${dayR}🪙 reclamados! Día ${(streak%7||1)} de racha 🔥`);
+  if(userData)userData.last_daily_date=today;
+  renderDaily();
+}
+
+// ═══════════════════════════
+// ADS — with countdown in ad + X button
+// ═══════════════════════════
+async function openAd(){
+  const btn=g('adPlay');
+  btn.classList.add('busy');btn.textContent='⟳';
+  const r=await api('/api/ad/open','POST');
+  btn.classList.remove('busy');btn.textContent='▶';
   if(r.error){
-    if(r.error==='cooldown'){showCooldown(r.seconds);return;}
-    if(r.error==='hour_limit'){showCooldown(r.seconds);return;}
-    if(r.error==='daily_limit'){showToast('🚫','Límite diario ('+userData?.ads_max+' anuncios). ¡Vuelve mañana!');return;}
+    if(r.error==='cooldown'){showCd(r.seconds);return;}
+    if(r.error==='hour_limit'){showCd(r.seconds);return;}
+    if(r.error==='daily_limit'){showToast('🚫','Límite diario alcanzado. ¡Vuelve mañana!');return;}
     showToast('❌',r.error);return;
   }
+  adOpenTime=Date.now();adMinSecs=r.min_secs||30;adRMin=r.reward_min||4;adRMax=r.reward_max||6;
+  adFinishedOk=false;
+  g('cdBox').style.display='none';clearInterval(cdInterval);
 
-  adOpenTime=Date.now();adMinSecs=r.min_secs||30;
-  adRewardMin=r.reward_min||4;adRewardMax=r.reward_max||6;
-  hideCooldown();
-
-  // Open ad link
+  // Open ad in new tab
   window.open(r.link,'_blank');
-  tg?.HapticFeedback?.impactOccurred('light');
+  tg?.HapticFeedback?.impactOccurred('medium');
 
-  // Show countdown overlay inside video
-  const overlay=document.getElementById('adCountOverlay');
-  const timeEl=document.getElementById('adCountTime');
-  const claimBtn=document.getElementById('claimBtn');
-  const cbT=document.getElementById('cbT');
-  const cbS=document.getElementById('cbS');
+  // Show countdown inside the ad area
+  const adCd=g('adCd'),cdNum=g('adCdNum');
+  const adXBtn=g('adXBtn');
+  const claimBtn=g('claimBtn');
+  const claimT=g('claimT'),claimS=g('claimS');
 
-  overlay.style.display='flex';
-  claimBtn.className='claim-btn counting';
+  adCd.classList.add('show');
+  adXBtn.classList.remove('show');
+  claimBtn.className='claim c';
+  claimT.textContent='⏳ ESPERA '+adMinSecs+'s';
+  claimS.textContent='Mantén el anuncio abierto';
 
   clearInterval(adInterval);
-  let rem=adMinSecs;
-  timeEl.textContent=rem;
-  cbT.textContent='⏳ ESPERA '+rem+'s';
-  cbS.textContent='Mantén el anuncio abierto';
+  let rem=adMinSecs;cdNum.textContent=rem;
 
   adInterval=setInterval(()=>{
-    rem--;
-    timeEl.textContent=rem;
-    cbT.textContent='⏳ ESPERA '+rem+'s';
+    rem--;cdNum.textContent=rem;
+    claimT.textContent=`⏳ ESPERA ${rem}s`;
+    // Color countdown red in last 10s
+    if(rem<=10)adCd.style.background='rgba(255,45,85,.82)';
     if(rem<=0){
       clearInterval(adInterval);
-      overlay.style.display='none';
-      claimBtn.className='claim-btn ready';
-      cbT.textContent='✅ RECLAMAR RECOMPENSA';
-      cbS.textContent='¡Tiempo completado! Toca para cobrar tus monedas';
+      // Hide countdown, show X button
+      adCd.classList.remove('show');adCd.style.background='';
+      adXBtn.classList.add('show');
+      adFinishedOk=true;
+      // Activate claim button
+      claimBtn.className='claim r';
+      claimT.textContent='✅ RECLAMAR RECOMPENSA';
+      claimS.textContent='¡Tiempo completado! Toca para cobrar tus monedas';
       tg?.HapticFeedback?.notificationOccurred('success');
     }
   },1000);
 }
 
-async function openBoostAd(){sw('ads');setTimeout(()=>openAd(),100);}
+function adFinished(){
+  // User tapped X — ad closed
+  const adXBtn=g('adXBtn');adXBtn.classList.remove('show');
+  showToast('✅','Anuncio completado — ahora reclama tu recompensa');
+}
 
 async function claimAd(){
-  const btn=document.getElementById('claimBtn');
-  if(!btn.classList.contains('ready'))return;
-
+  if(!g('claimBtn').classList.contains('r'))return;
   const r=await api('/api/ad/claim','POST');
   if(r.error){
-    if(r.error==='too_fast'){showToast('⏳','Espera '+r.remaining+'s más');return;}
-    showToast('❌',r.error);return;
+    if(r.error==='too_fast')showToast('⏳',`Espera ${r.remaining}s más`);
+    else showToast('❌',r.error);return;
   }
-
-  // Success!
-  coinVal+=r.coins_earned;updateBalance();
-  spawnCoins(r.coins_earned);
-  showToast('✅','+'+r.coins_earned+' monedas! Total: '+Math.floor(coinVal)+'🪙');
+  coins+=r.coins_earned;updateBal();spawnCoins(r.coins_earned);
+  g('bAmt').classList.add('flash');setTimeout(()=>g('bAmt').classList.remove('flash'),350);
   tg?.HapticFeedback?.notificationOccurred('success');
-
-  // Flash balance
-  const ba=document.getElementById('bCoins');
-  ba.classList.add('flash');setTimeout(()=>ba.classList.remove('flash'),400);
-
-  // Reset button
-  btn.className='claim-btn waiting';
-  document.getElementById('cbT').textContent='▶ ABRE EL ANUNCIO PRIMERO';
-  document.getElementById('cbS').textContent='Toca el botón de arriba para ver el anuncio';
-  document.getElementById('apCnt').textContent=r.ads_today+' / 20';
-  buildDots(r.ads_today,20);
-
-  if(r.ads_today>=20){
-    document.getElementById('adDot').classList.remove('show');
-    showToast('🏆','¡20 anuncios completados hoy! Vuelve mañana');
-  }
-
-  if(r.missions_completed?.length)
-    setTimeout(()=>{spawnCoins(50);showToast('🎯','¡Misión completada! +bonus 🪙');},1200);
+  showToast('✅','+'+r.coins_earned+'🪙 ganadas! Total: '+Math.floor(coins)+'🪙');
+  g('claimBtn').className='claim w';
+  s('claimT','▶ ABRE EL ANUNCIO PRIMERO');s('claimS','Toca el botón de arriba para empezar');
+  s('apCnt',r.ads_today+' / 20');buildDots(r.ads_today,20);
+  g('adBadge').classList.toggle('on',r.ads_today<20);
+  if(r.missions_completed?.length)setTimeout(()=>{spawnCoins(50);showToast('🎯','¡Misión completada! +bonus 🪙');},1300);
 }
 
-function showCooldown(secs){
-  const box=document.getElementById('cooldownBox');box.style.display='block';
-  let rem=secs||45;
-  clearInterval(cdInterval);
-  const el=document.getElementById('cdTimer');
-  const upd=()=>{const m=Math.floor(rem/60),s=String(rem%60).padStart(2,'0');
-    el.textContent=m>0?`${m}:${s}`:`00:${s}`;
-    if(rem<=0){clearInterval(cdInterval);hideCooldown();loadUser();}rem--;};
+function showCd(secs){
+  const box=g('cdBox');box.style.display='block';
+  let rem=secs||45;clearInterval(cdInterval);
+  const upd=()=>{const m=Math.floor(rem/60),sc=String(rem%60).padStart(2,'0');s('cdTime',m>0?`${m}:${sc}`:`00:${sc}`);if(rem<=0){clearInterval(cdInterval);box.style.display='none';loadUser();}rem--;};
   upd();cdInterval=setInterval(upd,1000);
 }
-function hideCooldown(){
-  document.getElementById('cooldownBox').style.display='none';
-  clearInterval(cdInterval);
-}
+
 function buildDots(f,max){
-  const c=document.getElementById('apDots');if(!c)return;c.innerHTML='';
-  for(let i=0;i<max;i++){const d=document.createElement('div');d.className='ap-dot'+(i<f?' f':'');c.appendChild(d);}
+  const c=g('apDots');if(!c)return;c.innerHTML='';
+  for(let i=0;i<max;i++){const d=document.createElement('div');d.className='dot'+(i<f?' on':'');c.appendChild(d);}
 }
 
-// ══════════════════════════════════════
-//  MISSIONS
-// ══════════════════════════════════════
+// ═══════════════════════════
+// MISSIONS
+// ═══════════════════════════
 async function loadMissions(){
-  const el=document.getElementById('missionsList');
-  el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-family:Syne Mono;font-size:11px">Cargando...</div>';
+  const el=g('msList');el.innerHTML='<div style="text-align:center;color:var(--muted);padding:16px;font-family:var(--f3);font-size:11px;letter-spacing:1px">CARGANDO...</div>';
   const r=await api('/api/missions');if(r.error)return;
   const ICONS={ads:'📺',upgrade:'⛏️',referral:'👥',streak:'🔥',withdraw:'💸'};
   el.innerHTML=r.missions.map(m=>`
-    <div class="ms-card ${m.done?'done':''}">
-      <div class="ms-ico-w">${m.done?'✅':ICONS[m.type]||'🎯'}</div>
-      <div class="ms-info">
+    <div class="ms ${m.done?'done':''}">
+      <div class="ms-ic">${m.done?'✅':ICONS[m.type]||'🎯'}</div>
+      <div class="ms-body">
         <div class="ms-title">${m.done?`<s style="opacity:.5">${m.desc}</s>`:m.desc}</div>
-        <div class="ms-bar"><div class="ms-fill" style="width:${m.done?100:0}%"></div></div>
+        <div class="ms-pbar"><div class="ms-pfill" style="width:${m.done?100:0}%"></div></div>
         <div class="ms-sub">${m.done?'✅ COMPLETADA':'Pendiente'}</div>
       </div>
-      <span class="ms-tag">+${m.reward} 🪙</span>
+      <span class="ms-tag">+${m.reward}🪙</span>
     </div>`).join('');
 }
 
-// ══════════════════════════════════════
-//  RANKING
-// ══════════════════════════════════════
+// ═══════════════════════════
+// RANKING — premium design
+// ═══════════════════════════
 const MEDALS=['🥇','🥈','🥉','4️⃣','5️⃣','6️⃣','7️⃣','8️⃣','9️⃣','🔟'];
 async function loadRanking(){
   const r=await api('/api/ranking');if(r.error)return;
-  const top3=r.ranking.slice(0,3);
-  const rest=r.ranking.slice(3);
+  const top3=r.ranking.slice(0,3),rest=r.ranking.slice(3);
   const order=[top3[1],top3[0],top3[2]].filter(Boolean);
-  const cls=['pod2','pod1','pod3'],h=[38,54,28];
-  document.getElementById('podium').innerHTML=order.map((u,i)=>`
+  const cls=['pod2','pod1','pod3'],hs=[42,60,30];
+  g('podium').innerHTML=order.map((u,i)=>`
     <div class="pod ${cls[i]}">
+      ${cls[i]==='pod1'?'<div class="pod-crown">👑</div>':''}
       <div class="pod-av">${u.is_me?'⚡':'👤'}</div>
       <div class="pod-name">${u.name}</div>
       <div class="pod-coins">${u.coins.toLocaleString('es')}🪙</div>
-      <div class="pod-block" style="height:${h[i]}px">${u.pos}</div>
+      <div class="pod-block" style="height:${hs[i]}px">${u.pos}</div>
     </div>`).join('');
-  document.getElementById('rankList').innerHTML=rest.map(u=>`
+  g('rankList').innerHTML=rest.map(u=>`
     <div class="rr ${u.is_me?'me':''}">
       <span class="rr-pos">${MEDALS[u.pos-1]||u.pos}</span>
       <span class="rr-av">${u.is_me?'⚡':'👤'}</span>
@@ -1156,364 +1185,262 @@ async function loadRanking(){
     </div>`).join('');
 }
 
-// ══════════════════════════════════════
-//  WITHDRAW
-// ══════════════════════════════════════
-function updateWithdrawUI(d){
+// ═══════════════════════════
+// WITHDRAW — with clear minimums
+// ═══════════════════════════
+function updateWd(d){
   const pct=Math.min(d.coins/1000*100,100);
-  document.getElementById('wdPct').textContent=pct.toFixed(1)+'%';
-  document.getElementById('wdBar').style.width=pct+'%';
-  const remaining=Math.max(0,1000-d.coins);
-  let msg='';
-  if(pct>=100)msg='🎉 ¡LISTO PARA RETIRAR!';
-  else if(pct>=75)msg='🔥 Faltan solo '+Math.ceil(remaining)+' 🪙 — ¡casi!';
-  else msg='🔥 Estás al '+pct.toFixed(0)+'% — '+Math.ceil(remaining)+' 🪙 más';
-  document.getElementById('wdMsg').textContent=msg;
-
-  const wc=document.getElementById('wdContent');
+  const rem=Math.max(0,1000-d.coins);
+  s('wdPct',pct.toFixed(1)+'%');g('wdBar').style.width=pct+'%';
+  s('wdMsg',pct>=100?'🎉 ¡LISTO PARA RETIRAR!':pct>=75?`🔥 Solo ${Math.ceil(rem)}🪙 más`:pct>=50?`⚡ Al ${pct.toFixed(0)}% — ¡buen ritmo!`:`🔥 Al ${pct.toFixed(0)}% — ${Math.ceil(rem)}🪙 para 1€`);
+  const wc=g('wdContent');
   if(d.can_withdraw){
     wc.innerHTML=`
-      <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--green);margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">🎉</span><span>¡Ya puedes retirar! Elige tu método:</span>
+      <div style="background:rgba(0,255,136,.06);border:1px solid rgba(0,255,136,.2);border-radius:12px;padding:12px 14px;font-size:12px;color:var(--green);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:18px">🎉</span><span>¡Puedes retirar! Elige tu método:</span>
       </div>
       <div class="wd-method" id="wm-paypal" onclick="pickMethod('paypal')">
-        <div class="wm-top"><span class="wm-ico">💳</span><div class="wm-info"><div class="wm-name">PayPal</div><div class="wm-min">Mínimo: 1€ · Sin comisiones de nuestra parte</div><div class="wm-time">⏱ Transferencia: 24–72 horas</div></div></div>
+        <div class="wm-top"><span class="wm-ico">💳</span><div class="wm-name">PayPal</div></div>
+        <div class="wm-min-badge">MÍNIMO: $3 USD (~3€)</div>
+        <div class="wm-detail">Pago directo a tu email PayPal verificado<br>⏱ Transferencia: 24–72 horas hábiles<br>💸 Sin comisiones de nuestra parte</div>
       </div>
       <div class="wd-method" id="wm-usdt" onclick="pickMethod('usdt')">
-        <div class="wm-top"><span class="wm-ico">💎</span><div class="wm-info"><div class="wm-name">Telegram Wallet (USDT)</div><div class="wm-min">Mínimo: 1€ equiv. · Red TON (sin gas fees)</div><div class="wm-time">⏱ Transferencia: 24–72 horas</div></div></div>
+        <div class="wm-top"><span class="wm-ico">💎</span><div class="wm-name">Telegram Wallet (USDT)</div></div>
+        <div class="wm-min-badge">MÍNIMO: $1 USDT (sin gas fees)</div>
+        <div class="wm-detail">USDT directo a tu @username de Telegram Wallet<br>⏱ Transferencia: 24–72 horas hábiles<br>✅ Sin comisiones — red TON gratuita</div>
       </div>
-      <div id="wdDetailWrap" style="display:none">
+      <div id="wdWrap" style="display:none;margin-top:8px">
         <div class="inp-wrap">
-          <div class="inp-lbl" id="wdInpLbl">EMAIL PAYPAL</div>
+          <div class="inp-lbl" id="wdLbl">EMAIL PAYPAL</div>
           <input class="inp" id="wdInp" type="email" placeholder="tu@email.com">
         </div>
-        <div class="submit-btn" id="wdSubmitBtn" onclick="submitWd()">
-          <div class="sb-t">💸 SOLICITAR RETIRO — ${d.coins_eur?.toFixed(2)||'—'}€</div>
+        <div class="wd-btn" id="wdBtn" onclick="submitWd()">
+          <div class="wd-btn-t">💸 SOLICITAR RETIRO — ${(d.coins/1000).toFixed(2)}€</div>
         </div>
       </div>
-      <div style="font-size:10px;color:var(--muted);margin-top:10px;line-height:1.7;font-family:'Syne Mono';letter-spacing:.5px">
-        🔒 Verificamos cada retiro antes de procesar<br>
-        ⏱ Tiempo de proceso: 24–72 horas<br>
-        📋 Solo 1 retiro cada 7 días
+      <div style="font-family:var(--f3);font-size:9px;color:var(--muted);margin-top:10px;line-height:1.9;letter-spacing:.5px">
+        🔒 Verificación manual de cada retiro<br>⏱ Plazo de proceso: 24–72 horas hábiles<br>📋 Máximo 1 retiro cada 7 días<br>⚠️ Asegúrate de que los datos de pago sean correctos
       </div>
-      ${buildPaymentsLive()}`;
+      ${livePays()}`;
   }else{
     const miss=Math.max(0,1000-d.coins).toFixed(0);
     wc.innerHTML=`
-      <div style="background:rgba(255,61,87,.06);border:1px solid rgba(255,61,87,.2);border-radius:13px;padding:13px;margin-bottom:12px">
-        <div style="font-size:12px;color:#ff8a9a;margin-bottom:6px">❌ Te faltan <b style="color:#fff">${miss} 🪙</b> para el mínimo</div>
-        <div style="font-size:11px;color:var(--muted)">Ve anuncios diariamente para llegar en 5–7 días</div>
+      <div style="background:rgba(255,45,85,.05);border:1px solid rgba(255,45,85,.2);border-radius:12px;padding:13px;margin-bottom:12px">
+        <div style="font-size:12px;color:rgba(255,100,120,.9);margin-bottom:5px">❌ Te faltan <b style="color:var(--white)">${miss}🪙</b> para el mínimo</div>
+        <div style="font-size:11px;color:var(--muted)">Ve 20 anuncios al día para llegar en ~5–7 días</div>
       </div>
-      <div style="background:var(--panel);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:10px">
-        <div style="font-family:'Syne Mono';font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:10px">MÉTODOS DE PAGO</div>
+      <div style="background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px">
+        <div style="font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:2px;margin-bottom:9px">MÉTODOS DISPONIBLES</div>
         <div style="font-size:12px;color:var(--text);line-height:2.2">
-          💳 <b>PayPal</b> — Mínimo 1€ · 24–72h<br>
-          💎 <b>Telegram Wallet USDT</b> — Mínimo 1€ · 24–72h<br>
-          <span style="color:var(--muted);font-size:10px">Sin comisiones adicionales de nuestra parte</span>
+          💳 <b>PayPal</b> — Mínimo $3 USD · 24–72h<br>
+          💎 <b>Telegram Wallet USDT</b> — Mínimo $1 · 24–72h<br>
+          <span style="font-family:var(--f3);font-size:9px;color:var(--muted);letter-spacing:.5px">Sin comisiones adicionales · Pagos verificados manualmente</span>
         </div>
       </div>
-      ${buildPaymentsLive()}`;
+      ${livePays()}`;
   }
 }
 
-function buildPaymentsLive(){
-  const pays=[
-    {av:'🧑',name:'CarlosM',time:'hace 1h',amt:'1.00€'},
-    {av:'👩',name:'Elena_R',time:'hace 3h',amt:'1.20€'},
-    {av:'🧔',name:'HashMaster',time:'hace 6h',amt:'1.00€'},
-  ];
-  return`<div class="live-payments">
-    <div class="lp-title">💸 ÚLTIMOS PAGOS PROCESADOS</div>
-    ${pays.map(p=>`<div class="payout-row"><span class="pr-av">${p.av}</span><div class="pr-info"><div class="pr-name">${p.name}</div><div class="pr-time">${p.time}</div></div><span class="pr-amt">+${p.amt} ✓</span></div>`).join('')}
+function livePays(){
+  return`<div class="live-pays">
+    <div class="lp-lbl">💸 ÚLTIMOS PAGOS PROCESADOS</div>
+    ${[{av:'🧑',n:'CarlosM',t:'hace 1h',a:'1.00€ PayPal'},
+       {av:'👩',n:'Elena_R',t:'hace 3h',a:'1.20€ Wallet'},
+       {av:'🧔',n:'HashMaster',t:'hace 7h',a:'1.00€ PayPal'}]
+    .map(p=>`<div class="lp-row"><span class="lp-av">${p.av}</span><div class="lp-info"><div class="lp-name">${p.n}</div><div class="lp-time">${p.t}</div></div><span class="lp-amt">+${p.a} ✓</span></div>`).join('')}
   </div>`;
 }
 
 function pickMethod(m){
   document.querySelectorAll('.wd-method').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('wm-'+m)?.classList.add('sel');selMethod=m;
-  const wrap=document.getElementById('wdDetailWrap');
-  const lbl=document.getElementById('wdInpLbl');
-  const inp=document.getElementById('wdInp');
+  g('wm-'+m)?.classList.add('sel');selMethod=m;
+  const wrap=g('wdWrap'),lbl=g('wdLbl'),inp=g('wdInp');
   if(wrap)wrap.style.display='block';
-  if(m==='paypal'){if(lbl)lbl.textContent='EMAIL DE PAYPAL';if(inp){inp.type='email';inp.placeholder='tu@email.com';}}
-  else{if(lbl)lbl.textContent='USERNAME TELEGRAM WALLET';if(inp){inp.type='text';inp.placeholder='@tuusername';}}
+  if(m==='paypal'){lbl.textContent='EMAIL DE PAYPAL';inp.type='email';inp.placeholder='tu@email.com';}
+  else{lbl.textContent='@USERNAME TELEGRAM WALLET';inp.type='text';inp.placeholder='@tuusername';}
 }
 
 async function submitWd(){
-  const detail=document.getElementById('wdInp')?.value?.trim();
+  const detail=g('wdInp')?.value?.trim();
   if(!detail){showToast('⚠️','Introduce tus datos de pago');return;}
   if(!selMethod){showToast('⚠️','Elige un método primero');return;}
-  const btn=document.getElementById('wdSubmitBtn');
-  if(btn)btn.classList.add('disabled');
+  const btn=g('wdBtn');if(btn)btn.classList.add('off');
   const r=await api('/api/withdraw/request','POST',{method:selMethod,detail});
-  if(btn)btn.classList.remove('disabled');
+  if(btn)btn.classList.remove('off');
   if(r.success){
-    spawnCoins(10);
-    showToast('✅','¡Retiro de '+r.amount_eur.toFixed(2)+'€ enviado! Procesamos en 24–72h');
-    tg?.HapticFeedback?.notificationOccurred('success');
+    spawnCoins(10);tg?.HapticFeedback?.notificationOccurred('success');
+    showToast('✅',`¡Retiro de ${r.amount_eur.toFixed(2)}€ enviado! 24–72h`);
     setTimeout(()=>loadUser(),2000);
   }else showToast('❌','Error: '+r.error);
 }
 
-// ══════════════════════════════════════
-//  REFERRAL
-// ══════════════════════════════════════
-async function loadReferral(){
+// ═══════════════════════════
+// REFERRAL
+// ═══════════════════════════
+async function loadRef(){
   const r=await api('/api/referral');if(r.error)return;
-  refLink=r.link;refLinkData=r;
-  document.getElementById('refLinkTxt').textContent=r.link;
-  document.getElementById('refCount').textContent=r.count;
-  document.getElementById('refEarned').textContent=r.earned.toFixed(1)+'🪙';
-  document.getElementById('refB1').textContent=r.bonus||50;
-  document.getElementById('refP1').textContent=r.pct||3;
+  myLink=r.link;
+  s('refTxt',r.link);s('rCount',r.count);s('rEarned',r.earned.toFixed(1)+'🪙');
+  s('rB',r.bonus||50);s('rP',r.pct||3);
 }
-
-function copyLink(){
-  if(navigator.clipboard)navigator.clipboard.writeText(refLink);
-  showToast('📋','¡Enlace copiado!');
-  tg?.HapticFeedback?.notificationOccurred('success');
-}
-
+function copyLink(){if(navigator.clipboard)navigator.clipboard.writeText(myLink);showToast('📋','¡Enlace copiado!');tg?.HapticFeedback?.notificationOccurred('success');}
 function shareLink(){
-  const text=`⛏️ Gana dinero real con Crypto Miner Empire!\n\n💰 Mina monedas, ve anuncios y retira en PayPal o Telegram Wallet.\n\n🎁 Entra con mi link y gana bonus:\n${refLink}`;
-  if(tg?.openTelegramLink){
-    const url='https://t.me/share/url?url='+encodeURIComponent(refLink)+'&text='+encodeURIComponent(text.split('\n\n🎁')[0]);
-    tg.openTelegramLink(url);
-  }else window.open('https://t.me/share/url?url='+encodeURIComponent(refLink),'_blank');
-  showToast('📤','¡Compartiendo!');
+  const msg=`⛏️ Gana dinero real con Crypto Miner Empire!\n💰 Mina, ve anuncios y retira en PayPal o USDT\n🎁 ${myLink}`;
+  if(tg)tg.openTelegramLink('https://t.me/share/url?url='+encodeURIComponent(myLink)+'&text='+encodeURIComponent(msg.slice(0,200)));
+  else window.open('https://t.me/share/url?url='+encodeURIComponent(myLink),'_blank');
+  showToast('📤','¡Compartiendo en Telegram!');
 }
 
-// ══════════════════════════════════════
-//  TICKER
-// ══════════════════════════════════════
-const TICKS=[
-  {c:'ti-g',t:'✅ @CarlosM retiró 1.00€ — PayPal'},
-  {c:'ti-b',t:'⛏️ @MinerPro99 alcanzó nivel 3'},
-  {c:'',    t:'🔥 @SatoshiG lleva 7 días de racha'},
-  {c:'ti-g',t:'✅ @Elena_R retiró 1.20€ — Wallet'},
-  {c:'ti-y',t:'🏆 @CryptoK lidera con 8.400🪙'},
-  {c:'ti-b',t:'⛏️ @LauraP mejoró a Data Center'},
-  {c:'ti-g',t:'✅ @HashM retiró 1.00€ — PayPal'},
-  {c:'',    t:'👥 @JuanC invitó 5 amigos esta semana'},
-  {c:'ti-g',t:'✅ @PedroL retiró 1.50€ — Wallet'},
-  {c:'ti-b',t:'🚀 @NoemiB activó Boost x2'},
-  {c:'ti-g',t:'✅ @MiguelA retiró 1.00€ — PayPal'},
-  {c:'',    t:'💎 @ElMiner acumuló 5.000🪙 totales'},
+// ═══════════════════════════
+// CHAT
+// ═══════════════════════════
+const CSEED=[
+  {av:'👑',name:'CryptoK',bdg:'bdg-g',bl:'TOP1',msg:'¡Retiré 1€! Bot serio y paga 🔥',t:'10:02',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'⚡ @MinerPro99 mejoró a Granja Minera',t:'10:04',sys:true},
+  {av:'😎',name:'MinerPro99',bdg:'bdg-c',bl:'LV3',msg:'¡Gracias! 0.0008/seg sin hacer nada 🚀',t:'10:05',mine:false},
+  {av:'🦊',name:'SatoshiG',bdg:'bdg-n',bl:'✓PAGADA',msg:'PayPal en 8h. Muy serio el bot 👌',t:'10:07',mine:false},
+  {av:'🐺',name:'HashM',msg:'¿Cuántos ads al día para llegar rápido?',t:'10:09',mine:false},
+  {av:'🦊',name:'SatoshiG',bdg:'bdg-n',bl:'✓PAGADA',msg:'20 ads/día + boost = 5 días fácil',t:'10:10',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'✅ @CarlosM retiró 1.00€ → PayPal · < 24h',t:'10:11',sys:true},
+  {av:'🦅',name:'ElMiner',msg:'9 días de racha = +27% extra. Vale mucho',t:'10:13',mine:false},
+  {av:'👩',name:'Elena_R',bdg:'bdg-c',bl:'LV2',msg:'TIP: boost ANTES de ver ads. Lo dobla todo 💡',t:'10:15',mine:false},
 ];
-(()=>{
-  const el=document.getElementById('ticker');
-  const d=[...TICKS,...TICKS];
-  el.innerHTML=d.map(t=>`<span class="ti ${t.c}">${t.t}</span>`).join('');
-})();
-
-// ══════════════════════════════════════
-//  CHAT
-// ══════════════════════════════════════
-const CHAT_SEED=[
-  {av:'👑',name:'CryptoK',badge:'bg-gold',bl:'TOP 1',msg:'¡Acabo de retirar 1€! El bot sí paga, confirmado 🔥',time:'10:02',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'⚡ @MinerPro99 alcanzó nivel 3 — Granja Minera',time:'10:04',sys:true},
-  {av:'😎',name:'MinerPro99',badge:'bg-ton',bl:'LVL 3',msg:'Gracias!! Ya produzco 0.0008/seg 🚀',time:'10:05',mine:false},
-  {av:'🦊',name:'SatoshiG',badge:'bg-green',bl:'✓ PAGADA',msg:'Recibí 1.20€ en PayPal en menos de 12h. Muy serio el bot 👌',time:'10:07',mine:false},
-  {av:'🐺',name:'HashM',msg:'¿Con cuántos anuncios llegáis al mínimo?',time:'10:09',mine:false},
-  {av:'🦊',name:'SatoshiG',badge:'bg-green',bl:'✓ PAGADA',msg:'Con 20 anuncios al día en 5–7 días. El boost x2 ayuda',time:'10:10',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'✅ @CarlosM retiró 1.00€ → PayPal · Pagado',time:'10:11',sys:true},
-  {av:'🦅',name:'ElMiner',msg:'Llevo 5 días de racha, el +15% nota mucho en la producción',time:'10:13',mine:false},
-  {av:'👩',name:'Elena_R',badge:'bg-ton',bl:'LVL 2',msg:'El boost x2 antes de ver anuncios duplica todo 💡 Úsadlo',time:'10:15',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'🏆 @CryptoK sigue liderando: 8.420🪙 en temporada',time:'10:17',sys:true},
-];
-let chatMsgs=[...CHAT_SEED];
-
+let chatMsgs=[...CSEED];
 function renderChat(){
-  const el=document.getElementById('chatMsgs');if(!el)return;
+  const el=g('chatMsgs');if(!el)return;
   el.innerHTML=chatMsgs.map(m=>{
-    if(m.sys)return`<div class="cm"><div class="cm-bw" style="width:100%"><div class="cm-bub sys">${m.msg}</div></div></div>`;
-    return`<div class="cm ${m.mine?'mine':''}">
-      <div class="cm-av-w"><div class="cm-av">${m.av}</div><div class="cm-un">${m.name.substring(0,8)}</div></div>
-      <div class="cm-bw"><div class="cm-bub">${m.msg}</div>
-      <div class="cm-meta"><span class="cm-time">${m.time}</span>${m.badge?`<span class="cm-badge ${m.badge}">${m.bl}</span>`:''}</div></div></div>`;
-  }).join('');
-  el.scrollTop=el.scrollHeight;
+    if(m.sys)return`<div class="msg"><div class="msg-bw" style="width:100%"><div class="msg-bub sys">${m.msg}</div></div></div>`;
+    return`<div class="msg ${m.mine?'mine':''}">
+      <div class="msg-av-w"><div class="msg-av">${m.av}</div><div class="msg-un">${m.name.substring(0,8)}</div></div>
+      <div class="msg-bw"><div class="msg-bub">${m.msg}</div>
+      <div class="msg-meta"><span class="msg-time">${m.t}</span>${m.bdg?`<span class="msg-bdg ${m.bdg}">${m.bl}</span>`:''}</div></div></div>`;
+  }).join('');el.scrollTop=el.scrollHeight;
 }
-
 function sendChat(){
-  const inp=document.getElementById('chatInput');
-  const txt=inp.value.trim();if(!txt)return;
-  const banned=['estafa','scam','fake','robo','spam','hack','fraude'];
-  if(banned.some(w=>txt.toLowerCase().includes(w))){showToast('🚫','Mensaje bloqueado por moderación');inp.value='';return;}
-  const now=new Date();
-  const time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  chatMsgs.push({av:'⚡',name:'Tú',msg:txt,time,mine:true});
-  inp.value='';renderChat();
+  const inp=g('chatInp'),txt=inp.value.trim();if(!txt)return;
+  const bad=['estafa','scam','fake','robo','spam','hack'];
+  if(bad.some(w=>txt.toLowerCase().includes(w))){showToast('🚫','Mensaje bloqueado');inp.value='';return;}
+  const now=new Date(),t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  chatMsgs.push({av:'⚡',name:'Tú',msg:txt,t,mine:true});inp.value='';renderChat();
   tg?.HapticFeedback?.impactOccurred('light');
-  const REPLIES=[
-    {av:'🦊',name:'SatoshiG',badge:'bg-green',bl:'✓ PAGADA',msg:'👍'},
-    {av:'😎',name:'MinerPro99',badge:'bg-ton',bl:'LVL 3',msg:'Exacto! Yo pienso lo mismo 💪'},
-    {av:'🦅',name:'ElMiner',msg:'Buen punto, yo también lo noté'},
-    {av:'👩',name:'Elena_R',badge:'bg-ton',bl:'LVL 2',msg:'💯 Totalmente'},
-    {av:'🐺',name:'HashM',msg:'Sí, funciona así'},
+  const RS=[
+    {av:'🦊',name:'SatoshiG',bdg:'bdg-n',bl:'✓PAGADA',msg:'👍'},
+    {av:'😎',name:'MinerPro99',bdg:'bdg-c',bl:'LV3',msg:'Exacto 💪'},
+    {av:'🦅',name:'ElMiner',msg:'Buena pregunta'},
+    {av:'👩',name:'Elena_R',bdg:'bdg-c',bl:'LV2',msg:'💯'},
+    {av:'🐺',name:'HashM',msg:'De acuerdo'},
   ];
   setTimeout(()=>{
-    const r={...REPLIES[Math.floor(Math.random()*REPLIES.length)]};
-    r.time=new Date().getHours().toString().padStart(2,'0')+':'+new Date().getMinutes().toString().padStart(2,'0');
-    r.mine=false;chatMsgs.push(r);
-    if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);
-    renderChat();
-  },1200+Math.random()*1000);
+    const r={...RS[Math.floor(Math.random()*RS.length)]};
+    r.t=new Date().getHours().toString().padStart(2,'0')+':'+new Date().getMinutes().toString().padStart(2,'0');
+    r.mine=false;chatMsgs.push(r);if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);renderChat();
+  },1100+Math.random()*900);
 }
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('chatInput')===document.activeElement)sendChat();});
-const AUTO_CHAT=[
-  {av:'🦊',name:'SatoshiG',badge:'bg-green',bl:'✓ PAGADA',msg:'Vi mis 20 anuncios hoy 😄',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'✅ @NoemiB retiró 1.20€ → Telegram Wallet · Pagado',sys:true},
-  {av:'🐺',name:'HashM',msg:'El ranking esta semana está muy reñido 👀',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'👥 @JuanC invitó 5 amigos esta semana +250🪙',sys:true},
-  {av:'👩',name:'Elena_R',badge:'bg-ton',bl:'LVL 2',msg:'Tip: activad el boost ANTES de ver anuncios 💡',mine:false},
-  {av:'🤖',name:'SISTEMA',msg:'🔥 @ElMiner lleva 8 días de racha — +24% producción',sys:true},
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&g('chatInp')===document.activeElement)sendChat();});
+const AUTO=[
+  {av:'🦊',name:'SatoshiG',bdg:'bdg-n',bl:'✓PAGADA',msg:'Vi mis 20 anuncios hoy 😄',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'✅ @NoemiB retiró 1.20€ → Wallet · < 12h',sys:true},
+  {av:'🐺',name:'HashM',msg:'El ranking está muy reñido 👀',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'👥 @JuanC invitó 5 amigos — +250🪙 al instante',sys:true},
+  {av:'👩',name:'Elena_R',bdg:'bdg-c',bl:'LV2',msg:'Recordad: boost ANTES de ads 💡',mine:false},
+  {av:'🤖',name:'SISTEMA',msg:'🔥 @ElMiner lleva 9 días de racha — +27%',sys:true},
 ];
-let autoIdx=0;
-setInterval(()=>{
-  const m={...AUTO_CHAT[autoIdx%AUTO_CHAT.length]};
-  const now=new Date();
-  m.time=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
-  chatMsgs.push(m);
-  if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);
-  if(document.getElementById('sv-chat')?.classList.contains('on'))renderChat();
-  autoIdx++;
+let autoI=0;setInterval(()=>{
+  const m={...AUTO[autoI%AUTO.length]};
+  const now=new Date();m.t=now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+  chatMsgs.push(m);if(chatMsgs.length>40)chatMsgs=chatMsgs.slice(-30);
+  if(g('sv-chat')?.classList.contains('on'))renderChat();autoI++;
 },22000);
 
-// ══════════════════════════════════════
-//  ADMIN PANEL
-// ══════════════════════════════════════
-const ADMIN_PASS='admin2024!';
-let adminAuthed=false;
-
-// Secret gesture: triple tap on balance
-let tapCount=0,tapTimer=null;
-document.addEventListener('click',()=>{
-  tapCount++;clearTimeout(tapTimer);
-  tapTimer=setTimeout(()=>tapCount=0,600);
-  if(tapCount>=7){tapCount=0;document.getElementById('adminPanel').classList.add('show');}
-});
-
-function adminLogin(){
-  const pass=document.getElementById('adminPass').value;
-  const err=document.getElementById('adminErr');
-  if(pass===ADMIN_PASS){
-    adminAuthed=true;
-    document.getElementById('adminLogin').style.display='none';
-    document.getElementById('adminDash').style.display='block';
-    loadAdminDash();
-  }else{
-    err.style.display='block';
-    document.getElementById('adminPass').value='';
-    setTimeout(()=>err.style.display='none',3000);
-  }
+// ═══════════════════════════
+// ADMIN
+// ═══════════════════════════
+const ADM_PASS='CME_Admin_2024!';let admAuthed=false;
+function doLogin(){
+  const p=g('admPass')?.value;
+  if(p===ADM_PASS){
+    admAuthed=true;g('admLogin').style.display='none';g('admDash').style.display='block';
+    // Try load stats
+    api('/api/user').then(u=>{if(u&&!u.error){s('aUs','—');s('aAct','—');s('aPaid','—€');s('aPend','—');}});
+  }else{const e=g('admErr');e.style.display='block';g('admPass').value='';setTimeout(()=>e.style.display='none',3000);}
 }
+function closeAdm(){g('adm').classList.remove('on');if(!admAuthed&&g('admPass'))g('admPass').value='';}
 
-async function loadAdminDash(){
-  const stats=await api('/api/user');// uses existing user endpoint for now
-  const el=document.getElementById('adminDash');
-  el.innerHTML=`
-    <div style="font-family:'Syne Mono';font-size:9px;color:var(--ton);letter-spacing:2px;margin-bottom:12px">PANEL DE ADMINISTRACIÓN</div>
-    <div class="admin-stats-grid">
-      <div class="ast"><div class="ast-val" style="color:var(--ton)">—</div><div class="ast-lbl">USUARIOS</div></div>
-      <div class="ast"><div class="ast-val" style="color:var(--green)">—</div><div class="ast-lbl">ACTIVOS HOY</div></div>
-      <div class="ast"><div class="ast-val" style="color:var(--gold)">—€</div><div class="ast-lbl">TOTAL PAGADO</div></div>
-      <div class="ast"><div class="ast-val" style="color:var(--red)">—</div><div class="ast-lbl">PENDIENTES</div></div>
-    </div>
-    <div class="admin-section">
-      <div class="admin-sec-lbl">RETIROS PENDIENTES</div>
-      <div style="text-align:center;color:var(--muted);padding:16px;font-family:'Syne Mono';font-size:11px">
-        Usa los comandos del bot:<br><br>
-        <b style="color:var(--ton)">/pending</b> — ver retiros<br>
-        <b style="color:var(--ton)">/user ID</b> — ver usuario<br>
-        <b style="color:var(--ton)">/admin</b> — estadísticas<br>
-        <b style="color:var(--ton)">/economy</b> — economía<br>
-        <b style="color:var(--ton)">/ban ID</b> — banear<br>
-        <b style="color:var(--ton)">/suspicious</b> — sospechosos
-      </div>
-    </div>
-    <div style="background:rgba(255,61,87,.06);border:1px solid rgba(255,61,87,.2);border-radius:12px;padding:12px;font-family:'Syne Mono';font-size:10px;color:var(--red);letter-spacing:1px;line-height:1.8">
-      🔒 ZONA PRIVADA<br>
-      Solo tú puedes ver esto.<br>
-      Acceso: 7 toques en pantalla
-    </div>`;
-}
-
-function closeAdmin(){
-  document.getElementById('adminPanel').classList.remove('show');
-  if(!adminAuthed){document.getElementById('adminPass').value='';}
-}
-
-// ══════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════
-let toastT;
+// ═══════════════════════════
+// TOAST
+// ═══════════════════════════
+let toastTimer;
 function showToast(ico,msg){
-  const t=document.getElementById('toast');
-  document.getElementById('tIco').textContent=ico;
-  document.getElementById('tTxt').textContent=msg;
-  t.style.display='flex';
-  clearTimeout(toastT);
-  toastT=setTimeout(()=>t.style.display='none',3000);
+  const t=g('toast');s('tIco',ico);s('tMsg',msg);t.style.display='flex';
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.style.display='none',3200);
 }
 
-// ══════════════════════════════════════
-//  NAV
-// ══════════════════════════════════════
+// ═══════════════════════════
+// NAV — with back button support
+// ═══════════════════════════
 function sw(name){
-  document.querySelectorAll('.sv').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
-  document.getElementById('sv-'+name)?.classList.add('on');
-  document.getElementById('ni-'+name)?.classList.add('on');
+  document.querySelectorAll('.sv').forEach(el=>el.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(el=>el.classList.remove('on'));
+  g('sv-'+name)?.classList.add('on');
+  g('ni-'+name)?.classList.add('on');
   if(name==='chat')renderChat();
-  if(name==='ads')buildDots(userData?.ads_today||0,userData?.ads_max||20);
-  if(name==='referral')loadReferral();
+  if(name==='ads'&&userData){buildDots(userData.ads_today,userData.ads_max);s('apCnt',userData.ads_today+' / '+userData.ads_max);}
+  if(name==='referral')loadRef();
+  if(name==='missions')loadMissions();
+  if(name==='daily')renderDaily();
+  // Show back button when not on home
+  if(tg){if(name==='home')tg.BackButton.hide();else tg.BackButton.show();}
 }
 
-// ══════════════════════════════════════
-//  INIT / SPLASH
-// ══════════════════════════════════════
+// ═══════════════════════════
+// HELPERS
+// ═══════════════════════════
+const g=x=>document.getElementById(x);
+const s=(x,v)=>{const el=g(x);if(el)el.textContent=v};
+
+// ═══════════════════════════
+// SPLASH + INIT
+// ═══════════════════════════
 async function init(){
-  const fill=document.getElementById('splashFill');
-  // Animate load bar
-  let p=0;
-  const loadInterval=setInterval(()=>{
-    p=Math.min(p+(Math.random()*15+8),90);
-    if(fill)fill.style.width=p+'%';
-  },180);
+  // Load bar animation
+  const fill=g('spFill');let p=0;
+  const loadIv=setInterval(()=>{p=Math.min(p+(Math.random()*12+6),90);if(fill)fill.style.width=p+'%';},200);
 
   await loadUser();
 
-  clearInterval(loadInterval);
+  clearInterval(loadIv);
   if(fill)fill.style.width='100%';
+  await new Promise(r=>setTimeout(r,300));
 
   // WOW moment
-  await new Promise(r=>setTimeout(r,400));
-  const wow=document.getElementById('splashWow');
-  wow.classList.add('show');
-  // Give welcome bonus visually
-  coinVal+=5;
+  const wow=g('spWow');wow.style.display='flex';
+  coins+=5;
+  tg?.HapticFeedback?.notificationOccurred('success');
 
-  await new Promise(r=>setTimeout(r,1500));
+  // Coins rain in WOW
+  const wp=g('wowPart');
+  for(let i=0;i<10;i++){
+    setTimeout(()=>{
+      const el=document.createElement('div');
+      el.style.cssText=`position:absolute;font-size:22px;left:${Math.random()*90}%;top:${20+Math.random()*60}%;pointer-events:none;animation:fcUp 1s ease forwards;z-index:1`;
+      el.textContent='🪙';wp.appendChild(el);setTimeout(()=>el.remove(),1000);
+    },i*100);
+  }
 
-  // Launch app
-  document.getElementById('splash').style.display='none';
-  document.getElementById('app').style.display='flex';
+  await new Promise(r=>setTimeout(r,1800));
 
-  // Start mine particles
-  startMineParticles();
+  // Launch
+  g('splash').style.display='none';
+  g('app').style.display='flex';
+  s('chCnt',`👥 ${Math.floor(Math.random()*300+150)} miembros · online`);
 
-  // Spawn welcome coins
-  setTimeout(()=>spawnCoins(5,window.innerWidth/2,window.innerHeight/2),200);
+  // Daily badge check
+  const today=new Date().toISOString().split('T')[0];
+  if(userData?.last_daily_date!==today)g('dailyBadge').classList.add('on');
 
-  // Set chat online count
-  document.getElementById('chatOnline').textContent=`👥 ${Math.floor(Math.random()*300+150)} miembros · online`;
-
-  // Periodic ad reminder
+  // Periodic refresh
   setInterval(()=>{
-    if(userData&&userData.ads_today<userData.ads_max){
-      document.getElementById('adDot').classList.add('show');
-    }
+    if(userData&&userData.ads_today<userData.ads_max)g('adBadge').classList.add('on');
   },60000);
 }
 
