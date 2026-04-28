@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CME Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#030508;--panel:#0A1020;--panel2:#0E1628;
+  --border:rgba(0,212,255,.12);--border2:rgba(0,212,255,.22);
+  --cyan:#00D4FF;--cyan2:#0090CC;--gold:#FFB800;--green:#00FF88;
+  --red:#FF2D55;--orange:#FF8C00;--purple:#BF5FFF;
+  --text:#8BAFD4;--white:#E0F2FF;--muted:#1A2840;
+  --f1:'Rajdhani',sans-serif;--f2:'Share Tech Mono',monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);font-family:var(--f1);color:var(--text);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.02) 2px,rgba(0,0,0,.02) 4px)}
+
+/* ══ LOGIN ══ */
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999}
+.login-box{background:var(--panel);border:1px solid var(--border2);border-radius:20px;padding:32px 28px;width:320px;text-align:center;position:relative;overflow:hidden}
+.login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent)}
+.login-ico{font-size:40px;margin-bottom:12px}
+.login-title{font-family:var(--f2);font-size:18px;color:var(--white);letter-spacing:2px;margin-bottom:4px}
+.login-sub{font-family:var(--f2);font-size:10px;color:var(--muted);letter-spacing:1px;margin-bottom:24px}
+.login-field{margin-bottom:12px;text-align:left}
+.login-lbl{font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:4px}
+.login-inp{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--white);font-family:var(--f1);outline:none}
+.login-inp:focus{border-color:var(--cyan2)}
+.login-inp::placeholder{color:var(--muted)}
+.login-btn{width:100%;background:linear-gradient(135deg,rgba(0,212,255,.1),rgba(0,144,204,.08));border:1.5px solid var(--cyan2);border-radius:10px;padding:12px;font-family:var(--f2);font-size:12px;color:var(--cyan);letter-spacing:2px;cursor:pointer;margin-top:8px;transition:all .2s}
+.login-btn:hover{background:rgba(0,212,255,.15);box-shadow:0 0 20px rgba(0,212,255,.2)}
+.login-btn:active{transform:scale(.97)}
+.login-err{font-family:var(--f2);font-size:10px;color:var(--red);letter-spacing:1px;margin-top:8px;display:none}
+.login-warn{font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:.5px;margin-top:16px;line-height:1.6}
+
+/* ══ APP ══ */
+#admin-app{display:none;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{position:fixed;left:0;top:0;bottom:0;width:220px;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;z-index:100}
+.sb-logo{padding:18px 16px;border-bottom:1px solid var(--border)}
+.sb-logo-title{font-family:var(--f2);font-size:13px;color:var(--white);letter-spacing:2px}
+.sb-logo-sub{font-family:var(--f2);font-size:9px;color:var(--red);letter-spacing:1px;margin-top:2px}
+.sb-nav{flex:1;padding:12px 8px;display:flex;flex-direction:column;gap:3px}
+.sb-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:600;color:var(--muted)}
+.sb-item:hover{background:rgba(0,212,255,.05);color:var(--text)}
+.sb-item.on{background:rgba(0,212,255,.08);color:var(--cyan);border-left:2px solid var(--cyan)}
+.sb-item-ico{font-size:16px;width:20px;text-align:center}
+.sb-bottom{padding:12px 8px;border-top:1px solid var(--border)}
+.sb-logout{display:flex;align-items:center;gap:8px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:12px;color:var(--red);transition:all .15s;font-family:var(--f2);letter-spacing:1px}
+.sb-logout:hover{background:rgba(255,45,85,.06)}
+
+/* MAIN */
+.main{margin-left:220px;min-height:100vh;padding:24px}
+
+/* PAGE */
+.page{display:none}
+.page.on{display:block}
+.page-header{margin-bottom:20px}
+.page-title{font-family:var(--f2);font-size:18px;color:var(--white);letter-spacing:2px}
+.page-sub{font-family:var(--f2);font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}
+
+/* STAT CARDS */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.stat-card.sc-cyan::before{background:var(--cyan)}
+.stat-card.sc-gold::before{background:var(--gold)}
+.stat-card.sc-green::before{background:var(--green)}
+.stat-card.sc-red::before{background:var(--red)}
+.sc-ico{font-size:22px;margin-bottom:8px}
+.sc-val{font-family:var(--f2);font-size:22px;color:var(--white);letter-spacing:.5px;margin-bottom:3px}
+.sc-lbl{font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px}
+.sc-delta{font-family:var(--f2);font-size:9px;margin-top:4px}
+.sc-delta.up{color:var(--green)}.sc-delta.dn{color:var(--red)}
+
+/* TABLE */
+.tbl-wrap{background:var(--panel);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.tbl-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.tbl-title{font-family:var(--f2);font-size:12px;color:var(--white);letter-spacing:1px}
+.tbl-actions{display:flex;gap:8px}
+.tbl-search{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--text);font-family:var(--f1);outline:none;width:200px}
+.tbl-search:focus{border-color:var(--cyan2)}
+.tbl-search::placeholder{color:var(--muted)}
+.tbl-btn{background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:8px;padding:6px 12px;font-family:var(--f2);font-size:9px;color:var(--cyan);cursor:pointer;letter-spacing:1px;transition:all .15s}
+.tbl-btn:hover{background:rgba(0,212,255,.14)}
+.tbl-btn.red{background:rgba(255,45,85,.08);border-color:rgba(255,45,85,.2);color:var(--red)}
+.tbl-btn.green{background:rgba(0,255,136,.08);border-color:rgba(0,255,136,.2);color:var(--green)}
+.tbl-btn.gold{background:rgba(255,184,0,.08);border-color:rgba(255,184,0,.2);color:var(--gold)}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.2)}
+td{padding:11px 14px;font-size:13px;color:var(--text);border-bottom:1px solid rgba(255,255,255,.03)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(0,212,255,.02)}
+.badge{font-family:var(--f2);font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.5px;display:inline-block}
+.badge-green{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.badge-red{background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.2)}
+.badge-gold{background:rgba(255,184,0,.1);color:var(--gold);border:1px solid rgba(255,184,0,.2)}
+.badge-cyan{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.2)}
+.badge-muted{background:rgba(255,255,255,.04);color:var(--muted);border:1px solid rgba(255,255,255,.08)}
+.btn-row{display:flex;gap:5px}
+.act-btn{font-family:var(--f2);font-size:8px;padding:3px 7px;border-radius:6px;cursor:pointer;letter-spacing:.5px;transition:all .15s;border:1px solid}
+.act-btn:hover{transform:scale(1.05)}
+.act-ban{background:rgba(255,45,85,.1);border-color:rgba(255,45,85,.25);color:var(--red)}
+.act-pay{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.25);color:var(--green)}
+.act-rej{background:rgba(255,184,0,.1);border-color:rgba(255,184,0,.25);color:var(--gold)}
+.act-view{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.2);color:var(--cyan)}
+
+/* CHARTS */
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.chart-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px}
+.chart-title{font-family:var(--f2);font-size:11px;color:var(--white);letter-spacing:1px;margin-bottom:14px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bar{border-radius:4px 4px 0 0;width:100%;min-height:4px;transition:height .5s ease;position:relative}
+.bar:hover::after{content:attr(data-val);position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:var(--f2);font-size:9px;color:var(--white);white-space:nowrap}
+.bar-lbl{font-family:var(--f2);font-size:8px;color:var(--muted)}
+
+/* FILTER TABS */
+.filter-tabs{display:flex;gap:6px;margin-bottom:14px}
+.ftab{font-family:var(--f2);font-size:9px;padding:5px 12px;border-radius:20px;cursor:pointer;letter-spacing:.5px;transition:all .15s;border:1px solid var(--border);color:var(--muted)}
+.ftab:hover{border-color:rgba(0,212,255,.2);color:var(--text)}
+.ftab.on{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--cyan)}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal.on{display:flex}
+.modal-box{background:var(--panel2);border:1px solid var(--border2);border-radius:16px;padding:24px;width:380px;max-width:95vw;position:relative}
+.modal-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);border-radius:16px 16px 0 0}
+.modal-title{font-family:var(--f2);font-size:14px;color:var(--white);letter-spacing:1px;margin-bottom:16px}
+.modal-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:13px}
+.modal-key{color:var(--muted)}.modal-val{color:var(--white);font-weight:600}
+.modal-close{position:absolute;top:12px;right:14px;font-size:18px;color:var(--muted);cursor:pointer;line-height:1;padding:4px}
+.modal-close:hover{color:var(--white)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-family:var(--f2);font-size:10px;cursor:pointer;letter-spacing:1px;transition:all .15s;text-align:center;border:1px solid}
+.modal-btn:active{transform:scale(.97)}
+.mb-red{background:rgba(255,45,85,.1);border-color:rgba(255,45,85,.3);color:var(--red)}
+.mb-green{background:rgba(0,255,136,.1);border-color:rgba(0,255,136,.3);color:var(--green)}
+.mb-muted{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1);color:var(--muted)}
+
+/* RISK badge */
+.risk{font-family:var(--f2);font-size:9px;padding:2px 7px;border-radius:20px}
+.risk-0{background:rgba(0,255,136,.1);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.risk-1{background:rgba(255,184,0,.1);color:var(--gold);border:1px solid rgba(255,184,0,.2)}
+.risk-2{background:rgba(255,45,85,.1);color:var(--red);border:1px solid rgba(255,45,85,.2)}
+
+/* ALERT */
+.alert{background:rgba(255,45,85,.06);border:1px solid rgba(255,45,85,.2);border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,100,120,.9);margin-bottom:12px}
+.alert.info{background:rgba(0,212,255,.05);border-color:rgba(0,212,255,.18);color:var(--cyan)}
+
+/* EMPTY STATE */
+.empty{text-align:center;padding:40px 20px;font-family:var(--f2);font-size:11px;color:var(--muted);letter-spacing:1px}
+
+/* TOAST */
+.adm-toast{position:fixed;bottom:24px;right:24px;z-index:1000;background:var(--panel2);border:1px solid var(--border2);border-radius:10px;padding:12px 18px;display:none;align-items:center;gap:8px;font-family:var(--f2);font-size:11px;color:var(--green);box-shadow:0 8px 32px rgba(0,0,0,.4);animation:toastIn .2s ease}
+@keyframes toastIn{from{transform:translateY(10px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+/* LOADING */
+.loading{display:flex;align-items:center;gap:8px;font-family:var(--f2);font-size:11px;color:var(--muted);padding:20px}
+.loading-spin{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%);transition:transform .3s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .chart-row{grid-template-columns:1fr}
+  .mob-menu{display:flex}
+}
+.mob-menu{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:16px}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-ico">🔐</div>
+    <div class="login-title">ADMIN PANEL</div>
+    <div class="login-sub">CRYPTO MINER EMPIRE</div>
+
+    <div class="login-field">
+      <div class="login-lbl">USUARIO</div>
+      <input class="login-inp" id="loginUser" type="text" placeholder="admin" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-field">
+      <div class="login-lbl">CONTRASEÑA</div>
+      <input class="login-inp" id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+
+    <button class="login-btn" onclick="doLogin()">ENTRAR AL PANEL</button>
+    <div class="login-err" id="loginErr">❌ Credenciales incorrectas</div>
+    <div class="login-warn">🔒 Acceso restringido solo al administrador.<br>Los intentos fallidos quedan registrados.</div>
+  </div>
+</div>
+
+<!-- ══ ADMIN APP ══ -->
+<div id="admin-app">
+
+  <div class="mob-menu" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰</div>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-title">⛏️ CME ADMIN</div>
+      <div class="sb-logo-sub">🔴 ZONA PRIVADA</div>
+    </div>
+    <div class="sb-nav">
+      <div class="sb-item on" onclick="showPage('dashboard')">
+        <span class="sb-item-ico">📊</span>Dashboard
+      </div>
+      <div class="sb-item" onclick="showPage('users')">
+        <span class="sb-item-ico">👤</span>Usuarios
+      </div>
+      <div class="sb-item" onclick="showPage('withdrawals')">
+        <span class="sb-item-ico">💸</span>Retiros
+        <span id="pendingBadge" style="margin-left:auto;background:var(--red);color:#fff;font-family:var(--f2);font-size:8px;padding:1px 5px;border-radius:10px;display:none"></span>
+      </div>
+      <div class="sb-item" onclick="showPage('fraud')">
+        <span class="sb-item-ico">🚫</span>Anti-fraude
+      </div>
+      <div class="sb-item" onclick="showPage('stats')">
+        <span class="sb-item-ico">📈</span>Estadísticas
+      </div>
+    </div>
+    <div class="sb-bottom">
+      <div class="sb-logout" onclick="logout()">
+        <span>🚪</span>CERRAR SESIÓN
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="page on" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title">DASHBOARD</div>
+        <div class="page-sub">Resumen general del sistema · <span id="lastUpdate" style="color:var(--cyan)">actualizando...</span></div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card sc-cyan">
+          <div class="sc-ico">👤</div>
+          <div class="sc-val" id="ds-users">—</div>
+          <div class="sc-lbl">USUARIOS TOTALES</div>
+          <div class="sc-delta up" id="ds-users-d">—</div>
+        </div>
+        <div class="stat-card sc-gold">
+          <div class="sc-ico">💰</div>
+          <div class="sc-val" id="ds-coins">—</div>
+          <div class="sc-lbl">MONEDAS EN CIRCULACIÓN</div>
+          <div class="sc-delta" id="ds-coins-d">—</div>
+        </div>
+        <div class="stat-card sc-green">
+          <div class="sc-ico">📺</div>
+          <div class="sc-val" id="ds-ads">—</div>
+          <div class="sc-lbl">ADS ÚLTIMAS 24H</div>
+          <div class="sc-delta up" id="ds-ads-d">—</div>
+        </div>
+        <div class="stat-card sc-red">
+          <div class="sc-ico">💸</div>
+          <div class="sc-val" id="ds-pending">—</div>
+          <div class="sc-lbl">RETIROS PENDIENTES</div>
+          <div class="sc-delta" id="ds-pending-d">Gestiona ahora</div>
+        </div>
+      </div>
+
+      <!-- Quick stats row -->
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">ACTIVOS HOY</div>
+          <div style="font-family:var(--f2);font-size:20px;color:var(--green)" id="ds-active">—</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">TOTAL PAGADO</div>
+          <div style="font-family:var(--f2);font-size:20px;color:var(--gold)" id="ds-paid">—</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);letter-spacing:1px;margin-bottom:6px">SOSPECHOSOS</div>
+          <div style="font-family:var(--f2);font-size:20px;color:var(--red)" id="ds-susp">—</div>
+        </div>
+      </div>
+
+      <!-- Charts -->
+      <div class="chart-row">
+        <div class="chart-box">
+          <div class="chart-title">📺 ADS POR DÍA (ÚLTIMOS 7 DÍAS)</div>
+          <div class="bar-chart" id="chartAds"></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">💸 RETIROS POR DÍA</div>
+          <div class="bar-chart" id="chartWd"></div>
+        </div>
+      </div>
+
+      <!-- Recent activity -->
+      <div class="tbl-wrap">
+        <div class="tbl-hdr">
+          <div class="tbl-title">⚡ ACTIVIDAD RECIENTE</div>
+          <div class="tbl-btn" onclick="loadDashboard()">↻ ACTUALIZAR</div>
+        </div>
+        <table>
+          <thead><tr><th>USUARIO</th><th>ACCIÓN</th><th>DETALLE</th><th>HORA</th></tr></thead>
+          <tbody id="recentActivity">
+            <tr><td colspan="4"><div class="loading"><div class="loading-spin"></div>Cargando...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <div class="page-title">USUARIOS</div>
+        <div class="page-sub">Gestión completa de usuarios</div>
+      </div>
+
+      <div class="filter-tabs">
+        <div class="ftab on" onclick="filterUsers('all',this)">Todos</div>
+        <div class="ftab" onclick="filterUsers('active',this)">Activos hoy</div>
+        <div class="ftab" onclick="filterUsers('suspicious',this)">Sospechosos</div>
+        <div class="ftab" onclick="filterUsers('banned',this)">Baneados</div>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-hdr">
+          <div class="tbl-title">👤 LISTA DE USUARIOS</div>
+          <div class="tbl-actions">
+            <input class="tbl-search" id="userSearch" placeholder="Buscar por ID o nombre..." oninput="searchUsers()">
+          </div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>NOMBRE</th><th>MONEDAS</th><th>ADS HOY</th>
+              <th>RACHA</th><th>RIESGO</th><th>ESTADO</th><th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody id="usersList">
+            <tr><td colspan="8"><div class="loading"><div class="loading-spin"></div>Cargando...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- WITHDRAWALS -->
+    <div class="page" id="page-withdrawals">
+      <div class="page-header">
+        <div class="page-title">RETIROS</div>
+        <div class="page-sub">Aprueba o rechaza las solicitudes de pago</div>
+      </div>
+
+      <div id="pendingAlert" class="alert" style="display:none">
+        ⚠️ Tienes retiros pendientes que requieren tu atención
+      </div>
+
+      <div class="filter-tabs">
+        <div class="ftab on" onclick="filterWd('pending',this)">Pendientes</div>
+        <div class="ftab" onclick="filterWd('paid',this)">Pagados</div>
+        <div class="ftab" onclick="filterWd('rejected',this)">Rechazados</div>
+        <div class="ftab" onclick="filterWd('all',this)">Todos</div>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-hdr">
+          <div class="tbl-title">💸 SOLICITUDES DE RETIRO</div>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>USUARIO</th><th>IMPORTE</th><th>MÉTODO</th>
+              <th>DATOS PAGO</th><th>FECHA</th><th>ESTADO</th><th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody id="wdList">
+            <tr><td colspan="8"><div class="loading"><div class="loading-spin"></div>Cargando...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- FRAUD -->
+    <div class="page" id="page-fraud">
+      <div class="page-header">
+        <div class="page-title">ANTI-FRAUDE</div>
+        <div class="page-sub">Detecta y gestiona comportamientos sospechosos</div>
+      </div>
+
+      <div class="alert">
+        🔍 Sistema de detección activo: velocidad de clicks, tiempo de visionado, patrones de spam
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:16px">
+        <div style="background:var(--panel);border:1px solid rgba(255,45,85,.2);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--red);letter-spacing:1px;margin-bottom:6px">CLICKS RÁPIDOS</div>
+          <div style="font-family:var(--f2);font-size:22px;color:var(--white)" id="fr-fast">—</div>
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);margin-top:3px">usuarios detectados</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid rgba(255,184,0,.2);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--gold);letter-spacing:1px;margin-bottom:6px">RIESGO ALTO</div>
+          <div style="font-family:var(--f2);font-size:22px;color:var(--white)" id="fr-risk">—</div>
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);margin-top:3px">score > 7/10</div>
+        </div>
+        <div style="background:var(--panel);border:1px solid rgba(255,45,85,.3);border-radius:14px;padding:14px">
+          <div style="font-family:var(--f2);font-size:9px;color:var(--red);letter-spacing:1px;margin-bottom:6px">BANEADOS</div>
+          <div style="font-family:var(--f2);font-size:22px;color:var(--white)" id="fr-banned">—</div>
+          <div style="font-family:var(--f2);font-size:9px;color:var(--muted);margin-top:3px">cuentas bloqueadas</div>
+        </div>
+      </div>
+
+      <div class="tbl-wrap">
+        <div class="tbl-hdr">
+          <div class="tbl-title">🚨 USUARIOS SOSPECHOSOS</div>
+          <div class="tbl-btn red" onclick="banAll()">BANEAR TODOS</div>
+        </div>
+        <table>
+          <thead>
+            <tr><th>ID</th><th>NOMBRE</th><th>RIESGO</th><th>PROBLEMA</th><th>ADS RÁPIDOS</th><th>ACCIONES</th></tr>
+          </thead>
+          <tbody id="fraudList">
+            <tr><td colspan="6"><div class="loading"><div class="loading-spin"></div>Cargando...</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="page" id="page-stats">
+      <div class="page-header">
+        <div class="page-title">ESTADÍSTICAS</div>
+        <div class="page-sub">Análisis de rendimiento y monetización</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px">
+          <div style="font-family:var(--f2);font-size:11px;color:var(--white);letter-spacing:1px;margin-bottom:12px">📺 ECONOMÍA DE ANUNCIOS</div>
+          <div id="adsEconomy" style="font-size:13px;color:var(--text);line-height:2"></div>
+        </div>
+        <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px">
+          <div style="font-family:var(--f2);font-size:11px;color:var(--white);letter-spacing:1px;margin-bottom:12px">💰 FLUJO DE DINERO</div>
+          <div id="moneyFlow" style="font-size:13px;color:var(--text);line-height:2"></div>
+        </div>
+      </div>
+
+      <div class="chart-row">
+        <div class="chart-box">
+          <div class="chart-title">👤 NUEVOS USUARIOS POR DÍA</div>
+          <div class="bar-chart" id="chartUsers"></div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-title">⛏️ NIVEL DE MINAS</div>
+          <div id="mineStats" style="display:flex;flex-direction:column;gap:6px;margin-top:8px"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ MODALS ══ -->
+<!-- User detail modal -->
+<div class="modal" id="userModal">
+  <div class="modal-box">
+    <div class="modal-close" onclick="closeModal('userModal')">✕</div>
+    <div class="modal-title" id="umTitle">👤 DETALLE USUARIO</div>
+    <div id="umBody"></div>
+    <div class="modal-actions" id="umActions"></div>
+  </div>
+</div>
+
+<!-- Withdrawal detail modal -->
+<div class="modal" id="wdModal">
+  <div class="modal-box">
+    <div class="modal-close" onclick="closeModal('wdModal')">✕</div>
+    <div class="modal-title" id="wdmTitle">💸 PROCESAR RETIRO</div>
+    <div id="wdmBody"></div>
+    <div class="modal-actions" id="wdmActions"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="adm-toast" id="admToast">
+  <span id="admToastIco">✅</span>
+  <span id="admToastMsg">msg</span>
+</div>
+
+<script>
+// ══════════════════════════════
+// CONFIG
+// ══════════════════════════════
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'CME_Admin_2024!'; // Change this to something strong
+let SESSION_TOKEN = null;
+
+// ══════════════════════════════
+// LOGIN
+// ══════════════════════════════
+function doLogin(){
+  const u=g('loginUser').value.trim();
+  const p=g('loginPass').value;
+  const err=g('loginErr');
+
+  if(u===ADMIN_USER && p===ADMIN_PASS){
+    SESSION_TOKEN='ADM_'+Date.now();
+    sessionStorage.setItem('admToken',SESSION_TOKEN);
+    g('login').style.display='none';
+    g('admin-app').style.display='block';
+    initAdmin();
+  }else{
+    err.style.display='block';
+    g('loginPass').value='';
+    setTimeout(()=>err.style.display='none',3000);
+  }
+}
+
+function logout(){
+  sessionStorage.removeItem('admToken');
+  location.reload();
+}
+
+// Check session on load
+window.addEventListener('DOMContentLoaded',()=>{
+  const tok=sessionStorage.getItem('admToken');
+  if(tok){SESSION_TOKEN=tok;g('login').style.display='none';g('admin-app').style.display='block';initAdmin();}
+  g('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+  g('loginUser').addEventListener('keydown',e=>{if(e.key==='Enter')g('loginPass').focus();});
+});
+
+// ══════════════════════════════
+// API — calls to backend
+// ══════════════════════════════
+async function api(path,method='GET',body=null){
+  try{
+    const opts={method,headers:{'Content-Type':'application/json','X-Admin-Token':SESSION_TOKEN}};
+    if(body)opts.body=JSON.stringify(body);
+    const r=await fetch(path,opts);
+    return r.json();
+  }catch(e){
+    // If no real backend, return mock data
+    return getMockData(path);
+  }
+}
+
+// Mock data for demo (remove when real backend is connected)
+function getMockData(path){
+  const MOCK={
+    '/api/admin/stats':{
+      total_users:1247,new_today:23,active_today:318,
+      pending_wd:4,paid_eur:127.50,suspicious:8,banned:12,
+      ads_24h:6420,coins_circulating:2348000,
+    },
+    '/api/admin/users':{users:[
+      {user_id:6960257027,first_name:'Andy',username:'andy_admin',coins:1247,ads_today:12,streak:5,risk_score:0,is_suspicious:0,is_banned:0,mine_level:2,total_ads:342,created_at:'2024-01-15'},
+      {user_id:123456,first_name:'Carlos',username:'carlosm24',coins:890,ads_today:18,streak:3,risk_score:1,is_suspicious:0,is_banned:0,mine_level:1,total_ads:210,created_at:'2024-01-20'},
+      {user_id:234567,first_name:'Elena',username:'elena_r',coins:1100,ads_today:20,streak:7,risk_score:0,is_suspicious:0,is_banned:0,mine_level:2,total_ads:580,created_at:'2024-01-18'},
+      {user_id:345678,first_name:'Bot_Spammer',username:'bot123',coins:450,ads_today:24,streak:0,risk_score:8,is_suspicious:1,is_banned:0,mine_level:1,total_ads:890,created_at:'2024-01-25'},
+      {user_id:456789,first_name:'Fraude01',username:'fraude01',coins:0,ads_today:0,streak:0,risk_score:10,is_suspicious:1,is_banned:1,mine_level:1,total_ads:1200,created_at:'2024-01-22'},
+    ]},
+    '/api/admin/withdrawals':{withdrawals:[
+      {id:1,user_id:123456,first_name:'Carlos',amount_eur:1.00,method:'paypal:carlos@email.com',status:'pending',requested_at:'2024-01-26 10:30'},
+      {id:2,user_id:234567,first_name:'Elena',amount_eur:1.20,method:'usdt:@elena_wallet',status:'pending',requested_at:'2024-01-26 09:15'},
+      {id:3,user_id:789012,first_name:'Pedro',amount_eur:1.50,method:'paypal:pedro@gmail.com',status:'paid',requested_at:'2024-01-25 14:00'},
+      {id:4,user_id:890123,first_name:'Laura',amount_eur:1.00,method:'usdt:@laura_ton',status:'paid',requested_at:'2024-01-25 11:30'},
+      {id:5,user_id:901234,first_name:'Bot_Spammer',amount_eur:1.00,method:'paypal:bot@fake.com',status:'rejected',requested_at:'2024-01-24 16:00'},
+    ]},
+    '/api/admin/fraud':{users:[
+      {user_id:345678,first_name:'Bot_Spammer',username:'bot123',risk_score:8,fast_clicks:45,ads_today:24,reason:'Clicks rápidos + límite ads superado'},
+      {user_id:456789,first_name:'Fraude01',username:'fraude01',risk_score:10,fast_clicks:120,ads_today:0,reason:'Patrón de bot detectado — BANEADO'},
+    ]},
+  };
+  return MOCK[path]||{error:'not_found'};
+}
+
+// ══════════════════════════════
+// INIT
+// ══════════════════════════════
+function initAdmin(){
+  loadDashboard();
+  setInterval(loadDashboard,30000); // auto refresh every 30s
+}
+
+// ══════════════════════════════
+// DASHBOARD
+// ══════════════════════════════
+async function loadDashboard(){
+  g('lastUpdate').textContent=new Date().toLocaleTimeString('es');
+  const stats=await api('/api/admin/stats');
+
+  s('ds-users',(stats.total_users||0).toLocaleString('es'));
+  s('ds-users-d',`▲ +${stats.new_today||0} hoy`);
+  s('ds-coins',((stats.coins_circulating||0)/1000).toFixed(0)+'K');
+  s('ds-ads',(stats.ads_24h||0).toLocaleString('es'));
+  s('ds-pending',stats.pending_wd||0);
+  s('ds-active',(stats.active_today||0).toLocaleString('es'));
+  s('ds-paid',(stats.paid_eur||0).toFixed(2)+'€');
+  s('ds-susp',stats.suspicious||0);
+
+  // Pending badge
+  const pb=g('pendingBadge');
+  if(stats.pending_wd>0){pb.style.display='block';pb.textContent=stats.pending_wd;}
+  else pb.style.display='none';
+
+  if(stats.pending_wd>0)g('pendingAlert')?.style.removeProperty('display');
+
+  // Charts
+  buildBarChart('chartAds',[42,65,58,71,83,79,64],'Mon Tue Wed Thu Fri Sat Sun'.split(' '),getComputedStyle(document.documentElement).getPropertyValue('--cyan'));
+  buildBarChart('chartWd',[0,1,0,2,1,0,1],'Mon Tue Wed Thu Fri Sat Sun'.split(' '),'#FFB800');
+
+  // Recent activity
+  g('recentActivity').innerHTML=`
+    <tr><td><span class="badge badge-cyan">6960257027</span></td><td>andy_admin</td><td style="color:var(--green)">+5 monedas (anuncio)</td><td style="font-family:var(--f2);font-size:11px;color:var(--muted)">hace 2 min</td></tr>
+    <tr><td><span class="badge badge-cyan">123456</span></td><td>carlosm24</td><td style="color:var(--gold)">Retiro 1.00€ PayPal — PENDIENTE</td><td style="font-family:var(--f2);font-size:11px;color:var(--muted)">hace 18 min</td></tr>
+    <tr><td><span class="badge badge-cyan">234567</span></td><td>elena_r</td><td>Mejoró mina → GPU Gamer</td><td style="font-family:var(--f2);font-size:11px;color:var(--muted)">hace 35 min</td></tr>
+    <tr><td><span class="badge badge-red">345678</span></td><td>Bot_Spammer</td><td style="color:var(--red)">⚠️ 24 ads en 1h — SOSPECHOSO</td><td style="font-family:var(--f2);font-size:11px;color:var(--muted)">hace 1h</td></tr>
+    <tr><td><span class="badge badge-cyan">789012</span></td><td>Pedro</td><td style="color:var(--green)">Retiro 1.50€ pagado ✅</td><td style="font-family:var(--f2);font-size:11px;color:var(--muted)">hace 2h</td></tr>
+  `;
+}
+
+function buildBarChart(elId,data,labels,color){
+  const el=g(elId);if(!el)return;
+  const max=Math.max(...data)||1;
+  el.innerHTML=data.map((v,i)=>`
+    <div class="bar-col">
+      <div class="bar" style="height:${(v/max*70)+4}px;background:${color};opacity:.7" data-val="${v}"></div>
+      <span class="bar-lbl">${labels[i]}</span>
+    </div>`).join('');
+}
+
+// ══════════════════════════════
+// USERS
+// ══════════════════════════════
+let allUsers=[],userFilter='all';
+async function loadUsers(){
+  const r=await api('/api/admin/users');
+  allUsers=r.users||[];
+  renderUsers(allUsers);
+}
+
+function renderUsers(users){
+  const el=g('usersList');
+  if(!users.length){el.innerHTML=`<tr><td colspan="8"><div class="empty">No hay usuarios con este filtro</div></td></tr>`;return;}
+  el.innerHTML=users.map(u=>`
+    <tr>
+      <td><span class="badge badge-cyan">${u.user_id}</span></td>
+      <td><b style="color:var(--white)">${u.first_name}</b><br><span style="font-family:var(--f2);font-size:9px;color:var(--muted)">@${u.username}</span></td>
+      <td style="font-family:var(--f2);color:var(--gold)">${Math.floor(u.coins).toLocaleString('es')}🪙</td>
+      <td style="font-family:var(--f2)">${u.ads_today}/20</td>
+      <td style="font-family:var(--f2)">${u.streak}🔥</td>
+      <td><span class="risk ${u.risk_score>=7?'risk-2':u.risk_score>=4?'risk-1':'risk-0'}">${u.risk_score}/10</span></td>
+      <td>${u.is_banned?'<span class="badge badge-red">BANEADO</span>':u.is_suspicious?'<span class="badge badge-gold">SOSPECHOSO</span>':'<span class="badge badge-green">NORMAL</span>'}</td>
+      <td><div class="btn-row">
+        <div class="act-btn act-view" onclick="viewUser(${u.user_id})">VER</div>
+        ${u.is_banned?
+          `<div class="act-btn act-pay" onclick="unbanUser(${u.user_id})">DESBANEAR</div>`:
+          `<div class="act-btn act-ban" onclick="banUser(${u.user_id})">BANEAR</div>`}
+      </div></td>
+    </tr>`).join('');
+}
+
+function filterUsers(f,el){
+  userFilter=f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const filtered={
+    all:allUsers,
+    active:allUsers.filter(u=>u.ads_today>0),
+    suspicious:allUsers.filter(u=>u.is_suspicious&&!u.is_banned),
+    banned:allUsers.filter(u=>u.is_banned),
+  }[f]||allUsers;
+  renderUsers(filtered);
+}
+
+function searchUsers(){
+  const q=g('userSearch').value.toLowerCase();
+  const filtered=allUsers.filter(u=>
+    u.first_name.toLowerCase().includes(q)||
+    u.username.toLowerCase().includes(q)||
+    String(u.user_id).includes(q)
+  );
+  renderUsers(filtered);
+}
+
+function viewUser(uid){
+  const u=allUsers.find(x=>x.user_id===uid);if(!u)return;
+  g('umTitle').textContent='👤 '+u.first_name+' ('+uid+')';
+  g('umBody').innerHTML=`
+    <div class="modal-row"><span class="modal-key">ID Telegram</span><span class="modal-val">${u.user_id}</span></div>
+    <div class="modal-row"><span class="modal-key">Username</span><span class="modal-val">@${u.username}</span></div>
+    <div class="modal-row"><span class="modal-key">Monedas</span><span class="modal-val" style="color:var(--gold)">${Math.floor(u.coins).toLocaleString('es')} 🪙</span></div>
+    <div class="modal-row"><span class="modal-key">Nivel mina</span><span class="modal-val">NV.${u.mine_level}</span></div>
+    <div class="modal-row"><span class="modal-key">Racha</span><span class="modal-val">${u.streak} días 🔥</span></div>
+    <div class="modal-row"><span class="modal-key">Ads hoy</span><span class="modal-val">${u.ads_today}/20</span></div>
+    <div class="modal-row"><span class="modal-key">Total ads</span><span class="modal-val">${u.total_ads}</span></div>
+    <div class="modal-row"><span class="modal-key">Risk score</span><span class="modal-val" style="color:${u.risk_score>=7?'var(--red)':u.risk_score>=4?'var(--gold)':'var(--green)'}">${u.risk_score}/10</span></div>
+    <div class="modal-row"><span class="modal-key">Estado</span><span class="modal-val">${u.is_banned?'🚫 BANEADO':u.is_suspicious?'⚠️ SOSPECHOSO':'✅ NORMAL'}</span></div>
+    <div class="modal-row"><span class="modal-key">Registro</span><span class="modal-val">${u.created_at}</span></div>`;
+  g('umActions').innerHTML=`
+    ${u.is_banned?
+      `<div class="modal-btn mb-green" onclick="unbanUser(${uid});closeModal('userModal')">✅ DESBANEAR</div>`:
+      `<div class="modal-btn mb-red" onclick="banUser(${uid});closeModal('userModal')">🚫 BANEAR</div>`}
+    <div class="modal-btn mb-muted" onclick="closeModal('userModal')">CERRAR</div>`;
+  openModal('userModal');
+}
+
+async function banUser(uid){
+  await api('/admin/ban/'+uid,'POST',{uid});
+  const u=allUsers.find(x=>x.user_id===uid);if(u){u.is_banned=1;u.is_suspicious=0;}
+  renderUsers(allUsers.filter(u=>userFilter==='all'||true));
+  admToast('✅','Usuario '+uid+' baneado');
+  loadDashboard();
+}
+
+async function unbanUser(uid){
+  await api('/admin/unban/'+uid,'POST',{uid});
+  const u=allUsers.find(x=>x.user_id===uid);if(u){u.is_banned=0;}
+  renderUsers(allUsers);
+  admToast('✅','Usuario '+uid+' desbaneado');
+}
+
+// ══════════════════════════════
+// WITHDRAWALS
+// ══════════════════════════════
+let allWd=[],wdFilter='pending';
+async function loadWithdrawals(){
+  const r=await api('/api/admin/withdrawals');
+  allWd=r.withdrawals||[];
+  renderWd(allWd.filter(w=>w.status==='pending'));
+  const pending=allWd.filter(w=>w.status==='pending');
+  if(pending.length)g('pendingAlert').style.display='flex';
+}
+
+function renderWd(wds){
+  const el=g('wdList');
+  if(!wds.length){el.innerHTML=`<tr><td colspan="8"><div class="empty">No hay retiros con este filtro</div></td></tr>`;return;}
+  el.innerHTML=wds.map(w=>{
+    const [mtype,mdetail]=w.method.split(':');
+    return`<tr>
+      <td style="font-family:var(--f2);color:var(--cyan)">#${w.id}</td>
+      <td><b style="color:var(--white)">${w.first_name}</b><br><span style="font-family:var(--f2);font-size:9px;color:var(--muted)">${w.user_id}</span></td>
+      <td style="font-family:var(--f2);color:var(--gold);font-size:14px">${w.amount_eur.toFixed(2)}€</td>
+      <td>${mtype==='paypal'?'💳 PayPal':'💎 USDT Wallet'}</td>
+      <td style="font-family:var(--f2);font-size:10px;color:var(--cyan)">${mdetail}</td>
+      <td style="font-family:var(--f2);font-size:10px;color:var(--muted)">${w.requested_at}</td>
+      <td>${w.status==='pending'?'<span class="badge badge-gold">PENDIENTE</span>':
+           w.status==='paid'?'<span class="badge badge-green">PAGADO</span>':
+           '<span class="badge badge-red">RECHAZADO</span>'}</td>
+      <td><div class="btn-row">
+        ${w.status==='pending'?`
+          <div class="act-btn act-pay" onclick="processWd(${w.id},'paid')">✅ PAGAR</div>
+          <div class="act-btn act-rej" onclick="processWd(${w.id},'rejected')">❌ RECHAZAR</div>
+        `:'-'}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterWd(f,el){
+  wdFilter=f;
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  const filtered=f==='all'?allWd:allWd.filter(w=>w.status===f);
+  renderWd(filtered);
+}
+
+async function processWd(wid,status){
+  await api('/api/admin/withdrawals/'+wid,'POST',{status});
+  const w=allWd.find(x=>x.id===wid);if(w)w.status=status;
+  renderWd(allWd.filter(w=>wdFilter==='all'?true:w.status===wdFilter));
+  admToast(status==='paid'?'✅':'❌',status==='paid'?`Retiro #${wid} marcado como pagado`:`Retiro #${wid} rechazado`);
+  loadDashboard();
+}
+
+// ══════════════════════════════
+// FRAUD
+// ══════════════════════════════
+async function loadFraud(){
+  const stats=await api('/api/admin/stats');
+  s('fr-fast',stats.suspicious||0);
+  s('fr-risk',allUsers.filter(u=>u.risk_score>=7).length||2);
+  s('fr-banned',stats.banned||0);
+
+  const r=await api('/api/admin/fraud');
+  const users=r.users||[];
+  const el=g('fraudList');
+  if(!users.length){el.innerHTML=`<tr><td colspan="6"><div class="empty">✅ No hay usuarios sospechosos</div></td></tr>`;return;}
+  el.innerHTML=users.map(u=>`
+    <tr>
+      <td><span class="badge badge-red">${u.user_id}</span></td>
+      <td><b style="color:var(--white)">${u.first_name}</b></td>
+      <td><span class="risk ${u.risk_score>=7?'risk-2':'risk-1'}">${u.risk_score}/10</span></td>
+      <td style="font-size:12px;color:var(--orange)">${u.reason}</td>
+      <td style="font-family:var(--f2);color:var(--red)">${u.fast_clicks||0}</td>
+      <td><div class="btn-row">
+        <div class="act-btn act-ban" onclick="banUser(${u.user_id})">🚫 BANEAR</div>
+      </div></td>
+    </tr>`).join('');
+}
+
+async function banAll(){
+  if(!confirm('¿Banear TODOS los usuarios sospechosos?'))return;
+  admToast('🚫','Todos los sospechosos baneados');
+  loadFraud();
+}
+
+// ══════════════════════════════
+// STATS
+// ══════════════════════════════
+async function loadStats(){
+  const stats=await api('/api/admin/stats');
+  const adsRev=((stats.ads_24h||0)*0.008).toFixed(2);
+  const usersPayout=((stats.ads_24h||0)*5/1000*0.3).toFixed(2);
+  const margin=(adsRev-usersPayout).toFixed(2);
+
+  g('adsEconomy').innerHTML=`
+    <span style="color:var(--muted)">Ads últimas 24h:</span> <b style="color:var(--white)">${(stats.ads_24h||0).toLocaleString('es')}</b><br>
+    <span style="color:var(--muted)">Ingreso estimado:</span> <b style="color:var(--green)">${adsRev}€</b><br>
+    <span style="color:var(--muted)">Pago estimado usuarios:</span> <b style="color:var(--gold)">${usersPayout}€</b><br>
+    <span style="color:var(--muted)">Margen estimado:</span> <b style="color:var(--cyan)">${margin}€</b><br>
+    <span style="color:var(--muted)">Monedas en circulación:</span> <b style="color:var(--white)">${((stats.coins_circulating||0)/1000).toFixed(0)}K</b>`;
+
+  g('moneyFlow').innerHTML=`
+    <span style="color:var(--muted)">Total pagado (histórico):</span> <b style="color:var(--gold)">${(stats.paid_eur||0).toFixed(2)}€</b><br>
+    <span style="color:var(--muted)">Retiros pendientes:</span> <b style="color:var(--red)">${stats.pending_wd||0}</b><br>
+    <span style="color:var(--muted)">Usuarios activos hoy:</span> <b style="color:var(--green)">${stats.active_today||0}</b><br>
+    <span style="color:var(--muted)">Nuevos usuarios hoy:</span> <b style="color:var(--cyan)">+${stats.new_today||0}</b><br>
+    <span style="color:var(--muted)">Total usuarios:</span> <b style="color:var(--white)">${(stats.total_users||0).toLocaleString('es')}</b>`;
+
+  buildBarChart('chartUsers',[8,12,15,9,18,22,23],'L M X J V S D'.split(' '),'var(--purple)');
+
+  g('mineStats').innerHTML=[
+    {name:'GPU Básica NV.1',count:892,pct:72},
+    {name:'GPU Gamer NV.2',count:245,pct:20},
+    {name:'Granja NV.3',count:82,pct:7},
+    {name:'Data Center NV.4',count:24,pct:2},
+    {name:'Super Cluster NV.5',count:4,pct:0.3},
+  ].map(m=>`
+    <div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px">
+        <span>${m.name}</span><span style="font-family:var(--f2);color:var(--cyan)">${m.count}</span>
+      </div>
+      <div style="height:4px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${m.pct}%;background:var(--cyan);border-radius:2px"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════
+// NAVIGATION
+// ══════════════════════════════
+const pageLoaders={
+  dashboard:loadDashboard,
+  users:loadUsers,
+  withdrawals:loadWithdrawals,
+  fraud:loadFraud,
+  stats:loadStats,
+};
+
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.sb-item').forEach(i=>i.classList.remove('on'));
+  g('page-'+name).classList.add('on');
+  document.querySelector(`.sb-item[onclick="showPage('${name}')"]`)?.classList.add('on');
+  if(pageLoaders[name])pageLoaders[name]();
+}
+
+// ══════════════════════════════
+// MODAL
+// ══════════════════════════════
+function openModal(id){g(id).classList.add('on')}
+function closeModal(id){g(id).classList.remove('on')}
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('modal'))closeModal(e.target.id);
+});
+
+// ══════════════════════════════
+// ADMIN TOAST
+// ══════════════════════════════
+let admToastTimer;
+function admToast(ico,msg){
+  const t=g('admToast');s('admToastIco',ico);s('admToastMsg',msg);
+  t.style.display='flex';clearTimeout(admToastTimer);
+  admToastTimer=setTimeout(()=>t.style.display='none',3000);
+}
+
+// ══════════════════════════════
+// HELPERS
+// ══════════════════════════════
+const g=x=>document.getElementById(x);
+const s=(x,v)=>{const el=g(x);if(el)el.textContent=v};
+</script>
+</body>
+</html>
