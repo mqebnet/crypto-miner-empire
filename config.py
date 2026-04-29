@@ -8,7 +8,7 @@ load_dotenv()
 # ── TELEGRAM ────────────────────────────────────────────────
 BOT_TOKEN  = os.getenv("BOT_TOKEN", "8348643466:AAEuYJEhxjyY-NrIY6oNask_UwdlK_EI6zY")
 ADMIN_IDS  = [int(x) for x in os.getenv("ADMIN_IDS","0").split(",") if x.strip().isdigit()]
-WEBAPP_URL = os.getenv("WEBAPP_URL","").strip().rstrip("/")
+WEBAPP_URL = os.getenv("WEBAPP_URL","https://web-production-d6fea.up.railway.app").strip().rstrip("/")
 BOT_USERNAME = os.getenv("BOT_USERNAME","CryptoMinerEmpireBot")
 
 # ── ECONOMÍA ────────────────────────────────────────────────
